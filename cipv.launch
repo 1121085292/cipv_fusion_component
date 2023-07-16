@@ -1,0 +1,7 @@
+<cyber>
+    <module>
+        <name>cipvfusioncomponent</name>
+        <dag_conf>/opt/apollo/neo/packages/cipv_fusion_component-dev/latest/dag/cipv.dag</dag_conf>
+        <process_name>cipv</process_name>
+    </module>
+</cyber>

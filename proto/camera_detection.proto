@@ -1,0 +1,29 @@
+//proto版本
+syntax = "proto2";
+
+//包声明
+package cipv_fusion_component.proto;
+
+//消息声明
+message LeadDataV3 {
+    //字段格式：字段规则、数据类型、字段名、编号
+    optional float prob = 1;            // probability that car is your lead at time t
+    optional float prob_time = 2;
+    repeated float t = 3;
+
+    // x and y are relative position in device frame
+    // v absolute norm speed
+    // a is derivative of v
+    repeated float x = 4;
+    repeated float x_std = 5;
+    repeated float y = 6;
+    repeated float y_std = 7;
+    repeated float v = 8;
+    repeated float v_std = 9;
+    repeated float a = 10;
+    repeated float a_std = 11;
+}
+
+message LeadsV3 {
+    repeated LeadDataV3 lead_data_v3 = 1;
+}

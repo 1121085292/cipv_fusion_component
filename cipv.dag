@@ -1,0 +1,19 @@
+module_config {
+  module_library : "/opt/apollo/neo/packages/cipv_fusion_component-dev/latest/lib/libcipv_fusion_component.so"
+    components {
+        class_name : "RadarDetectionComponent"
+        config {
+            name : "CipvFusionComponent"
+
+            readers {
+                channel: "/perception/radar_state"
+            }
+            readers {
+                channel: "/perception/camera"
+            }
+            readers {
+                channel: "/car_state"
+            }
+        }
+    }
+}

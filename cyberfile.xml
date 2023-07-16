@@ -1,0 +1,17 @@
+<package>
+    <name>cipv_fusion_component</name>
+    <version>1.0</version>
+    <description>
+    cipv_fusion_component
+    </description>
+    <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
+    <type>module</type>
+    <src_path>//cipv_fusion_component</src_path>
+    <license>BSD</license>
+    <author>tang</author>
+    <depend type="binary" src_path="//cyber" repo_name="cyber">cyber-dev</depend>
+    <depend>bazel-extend-tools-dev</depend>
+    <depend lib_names="protobuf" repo_name="com_google_protobuf">3rd-protobuf-dev</depend>
+
+    <builder>bazel</builder>
+</package>    

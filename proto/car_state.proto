@@ -1,0 +1,13 @@
+//proto版本
+syntax = "proto2";
+
+//包声明
+package cipv_fusion_component.proto;
+
+message CarState {
+    //car speed
+    optional float v_ego = 1;       //best estimate of speed
+
+    //which packets this state came from
+    repeated uint64 can_mono_times = 2; 
+}
