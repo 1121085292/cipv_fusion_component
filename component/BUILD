@@ -40,7 +40,7 @@ cc_library(
     alwayslink = True,
     deps = [
         "//cyber",
-        "//cipv_fusion_component/proto:camera_detection_cc_proto",
+        "//cipv_fusion_component/proto:radar_detection_cc_proto",
     ],
 )
 
