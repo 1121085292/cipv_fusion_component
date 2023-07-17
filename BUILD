@@ -17,6 +17,7 @@ install(
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
         "//cipv_fusion_component/proto:car_state_cc_proto",
+        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
         "cyberfile.xml",
     ],
     data_dest = "cipv_fusion_component",
@@ -27,6 +28,7 @@ install(
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
         "//cipv_fusion_component/proto:car_state_cc_proto",
+        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
     ],
     deps = [
         "pb_headers",
@@ -41,6 +43,7 @@ install(
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
         "//cipv_fusion_component/proto:car_state_cc_proto",
+        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
     ],
     data_dest = "cipv_fusion_component/include"
 )
