@@ -16,10 +16,11 @@ int main(int argc, char const *argv[])
 
     float i = 0.0f;
 
+    auto out_msg = std::make_shared<LeadsV3>();
+    
     while (apollo::cyber::OK())
     {    
         i += 0.8;
-        auto out_msg = std::make_shared<LeadsV3>();
     
         out_msg->add_lead_data_v3();
 
