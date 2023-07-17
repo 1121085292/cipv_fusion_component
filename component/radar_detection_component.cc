@@ -54,7 +54,8 @@ bool RadarDetectionComponent::InternalProc(const std::shared_ptr<LeadsV3>& camer
     // // repeated value
     int size = radar->can_mono_times_size();
     for(int i = 0; i < size; ++i){
-        out_msg->set_can_mono_times(i);
+        float canmonotime = radar->can_mono_times(i);
+        out_msg->can_mono_times(canmonotime);
     }
     // optional value
     // float camera_prob = camera->prob();

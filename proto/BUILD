@@ -61,8 +61,8 @@ proto_library(
     name = "cipv_fusion_proto",
     srcs = ["cipv_fusion.proto",],
     deps = [
-        "//cipv_fusion_component/proto/radar_detection.proto",
-    ]
+        "//cipv_fusion_component/proto:radar_detection_proto",
+    ],
 )
 
 #生成 C++ 相关的源文件

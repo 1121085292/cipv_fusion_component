@@ -20,7 +20,7 @@ class RadarDetectionComponent : public Component<LeadsV3, RadarData, CarState>{
   public:
     bool Init() override;
     bool Proc(const std::shared_ptr<LeadsV3>& camera_obj,
-        const std::shared_ptr<RadarState>& radar_obj,
+        const std::shared_ptr<RadarData>& radar_obj,
         const std::shared_ptr<CarState>& car_info) override;
 
   private:

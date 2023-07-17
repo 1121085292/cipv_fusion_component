@@ -4,6 +4,8 @@ syntax = "proto2";
 //包声明
 package cipv_fusion_component.proto;
 
+import "cipv_fusion_component/proto/radar_detection.proto";
+
 //消息声明
 message LeadData {
     //字段格式：字段规则、数据类型、字段名、编号
@@ -23,18 +25,12 @@ message LeadData {
     optional bool radar = 14;
 }
 
-enum Error {
-    CANERROR = 0;
-    FAULT = 1;
-    WRONGCONFIG = 2;
-}
-
 // ******* radar state @ 20hz *******
 message RadarState {
     repeated uint64 can_mono_times = 1;
     optional uint64 md_mono_time = 2;
     optional uint64 car_state_mono_time = 3;
-    repeated Error radar_errors = 4;
+    repeated cipv_fusion_component.proto.Error radar_errors = 4;
 
     optional LeadData lead_one = 5;
     optional LeadData lead_two = 6;
