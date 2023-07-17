@@ -5,22 +5,15 @@ syntax = "proto2";
 package cipv_fusion_component.proto;
 
 //消息声明
-message LeadData {
+message RadarPoint {
     //字段格式：字段规则、数据类型、字段名、编号
-    optional float d_rel = 1;
-    optional float y_rel = 2;
-    optional float v_rel = 3;
-    optional float a_rel = 4;
-    optional float v_lead = 5;
-    optional float d_path = 6;
-    optional float v_lat = 7;
-    optional float v_lead_k = 8;
-    optional float a_lead_k = 9;
-    optional bool fcw = 10;
-    optional bool status = 11;
-    optional float a_lead_tau = 12;
-    optional float model_prob = 13;
-    optional bool radar = 14;
+    optional uint64 track_id = 1;
+    optional float d_rel = 2;   // m
+    optional float y_rel = 3;   // m
+    optional float v_rel = 4;   // m/s
+    optional float a_rel = 5;   // m/s^2
+    optional float y_v_rel = 6; // m/s
+    optional bool measured = 7;
 }
 
 enum Error {
@@ -30,13 +23,9 @@ enum Error {
 }
 
 // ******* radar state @ 20hz *******
-message RadarState {
-    repeated uint64 can_mono_times = 1;
-    optional uint64 md_mono_time = 2;
-    optional uint64 car_state_mono_time = 3;
-    repeated Error radar_errors = 4;
-
-    optional LeadData lead_one = 5;
-    optional LeadData lead_two = 6;
-    optional float cum_lag_ms = 7;
+message RadarData {
+    repeated Error errors = 1;
+    repeated RadarPoint points = 2;
+    
+    repeated uint64 can_mono_times = 3;
 }
