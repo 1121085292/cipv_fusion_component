@@ -18,21 +18,22 @@ cc_library(
     hdrs = ["radar_detection_component.h"],
     alwayslink = True,    
     deps = [
-        "//cyber/component",
+        "//cyber",
         "//cipv_fusion_component/proto:car_state_cc_proto",
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
+        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
     ],
 )
 # -----------------------------------
-cc_binary(
-    name = "libradar_detection.so",
-    linkshared = True,
-    linkstatic = True,
-    deps = [
-        ":radar_detection_lib",
-    ],
-)
+# cc_binary(
+#     name = "libradar_detection.so",
+#     linkshared = True,
+#     linkstatic = True,
+#     deps = [
+#         ":radar_detection_lib",
+#     ],
+# )
 
 cc_library(
     name = "radar_detection_lib",
@@ -81,4 +82,5 @@ cc_library(
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
     ],
 )
+
 cpplint()
