@@ -24,7 +24,7 @@ cc_library(
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
     ],
 )
-
+# -----------------------------------
 cc_binary(
     name = "libradar_detection.so",
     linkshared = True,
@@ -43,5 +43,42 @@ cc_library(
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
     ],
 )
+# -----------------------------------------
+cc_binary(
+    name = "libcar_state.so",
+    linkshared = True,
+    linkstatic = True,
+    deps = [
+        ":car_state_lib",
+    ],
+)
 
+cc_library(
+    name = "car_state_lib",
+    srcs = ["car_publish.cc"],
+    alwayslink = True,
+    deps = [
+        "//cyber",
+        "//cipv_fusion_component/proto:car_state_cc_proto",
+    ],
+)
+# -----------------------------------------
+cc_binary(
+    name = "libcamera_state.so",
+    linkshared = True,
+    linkstatic = True,
+    deps = [
+        ":camera_state_lib",
+    ],
+)
+
+cc_library(
+    name = "camera_state_lib",
+    srcs = ["camera_publish.cc"],
+    alwayslink = True,
+    deps = [
+        "//cyber",
+        "//cipv_fusion_component/proto:camera_detection_cc_proto",
+    ],
+)
 cpplint()
