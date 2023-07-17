@@ -6,7 +6,7 @@ module_config {
             name : "CipvFusionComponent"
 
             readers {
-                channel: "/perception/radar_state"
+                channel: "/perception/radar_data"
             }
             readers {
                 channel: "/perception/camera"
