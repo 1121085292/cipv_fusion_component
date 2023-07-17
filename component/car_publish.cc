@@ -16,10 +16,11 @@ int main(int argc, char const *argv[])
 
     float i = 0.0f;
 
+    auto out_msg = std::make_shared<CarState>();
+    
     while (apollo::cyber::OK())
     {   
         i += 0.5;
-        auto out_msg = std::make_shared<CarState>();
         out_msg->set_v_ego(i);   
         out_msg->add_can_mono_times(i);
         car_state->Write(out_msg);
