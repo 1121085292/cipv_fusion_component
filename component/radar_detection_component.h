@@ -8,13 +8,15 @@
 #include "cipv_fusion_component/proto/radar_detection.pb.h"
 #include "cipv_fusion_component/proto/car_state.pb.h"
 #include "cipv_fusion_component/proto/camera_detection.pb.h"
+#include "cipv_fusion_component/proto/cipv_fusion.pb.h"
 
 using apollo::cyber::Component;
 using cipv_fusion_component::proto::LeadsV3;
-using cipv_fusion_component::proto::RadarState;
+using cipv_fusion_component::proto::RadarData;
 using cipv_fusion_component::proto::CarState;
+using cipv_fusion_component::proto::RadarState;
 
-class RadarDetectionComponent : public Component<LeadsV3, RadarState, CarState>{
+class RadarDetectionComponent : public Component<LeadsV3, RadarData, CarState>{
   public:
     bool Init() override;
     bool Proc(const std::shared_ptr<LeadsV3>& camera_obj,
@@ -25,12 +27,13 @@ class RadarDetectionComponent : public Component<LeadsV3, RadarState, CarState>{
     // float seq_num;
     //publisher
     std::shared_ptr<apollo::cyber::Writer<RadarState>> fusion_writer_;
-    // std::shared_ptr<apollo::cyber::Writer<LeadDataV3>> camera_writer_;
-    // std::shared_ptr<apollo::cyber::Writer<CarState>> car_writer_;
+
     uint64_t radar_can_mono_times;
     // writer
-    auto out_msg = std::shared_ptr<RadarState>();
-    // cipv_fusion_component::proto::LeadData& radar_obj_info;
-
+    
+    bool InternalProc(const std::shared_ptr<LeadsV3>& camera,
+                      const std::shared_ptr<RadarData>& radar,
+                      const std::shared_ptr<CarState>& car_info,
+                      std::shared_ptr<RadarState>& out_msg);
 };
 CYBER_REGISTER_COMPONENT(RadarDetectionComponent);
