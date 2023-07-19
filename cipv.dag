@@ -1,19 +1,43 @@
 module_config {
   module_library : "/opt/apollo/neo/packages/cipv_fusion_component-dev/latest/lib/libcipv_fusion_component.so"
-    components {
-        class_name : "RadarDetectionComponent"
-        config {
-            name : "CipvFusionComponent"
 
-            readers {
-                channel: "/perception/radar_data"
-            }
-            readers {
-                channel: "/perception/camera"
-            }
-            readers {
-                channel: "/car_state"
-            }
+    timer_components {
+        class_name : "RadarPm"
+        config {
+            name : "RadarPublishComponent"
+            interval : 10
+        }
+    }
+
+    timer_components {
+        class_name : "CarPm"
+        config {
+            name : "CarPublishComponent"
+            interval : 10
+        }
+    }
+
+     timer_components {
+        class_name : "CameraPm"
+        config {
+            name : "CameraPublishComponent"
+            interval : 10
+        }
+    }
+
+    components {
+        class_name : "CipvFusionComponent"
+        config {
+            name : "CipvFusionComponent"  
+        readers {
+            channel : "/canbus/radar_data/"
+            }   
+        readers {
+            channel : "/canbus/car_data/"
+            }  
+        readers {
+            channel : "/perception/camera_data/"
+            } 
         }
     }
 }
