@@ -7,7 +7,7 @@
 #include "cyber/cyber.h"
 #include "cipv_fusion_component/proto/camera_detection.pb.h"
 
-using cipv_fusion_component::proto::LeadsV3;
+using cipv_fusion_component::proto::ModelV2;
 
 class CameraPm : public apollo::cyber::TimerComponent {
   public:
@@ -15,7 +15,7 @@ class CameraPm : public apollo::cyber::TimerComponent {
     bool Proc() override;
 
   private:
-    std::shared_ptr<apollo::cyber::Writer<LeadsV3>> camera_writer_ = nullptr;
+    std::shared_ptr<apollo::cyber::Writer<ModelV2>> camera_writer_ = nullptr;
 
 };
 CYBER_REGISTER_COMPONENT(CameraPm);
