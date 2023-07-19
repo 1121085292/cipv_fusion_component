@@ -9,5 +9,5 @@ message CarState {
     optional float v_ego = 1;       //best estimate of speed
 
     //which packets this state came from
-    repeated uint64 can_mono_times = 2; 
+    optional uint64 can_mono_times = 2; 
 }
