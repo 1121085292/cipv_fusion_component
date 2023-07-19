@@ -3,13 +3,13 @@ using apollo::cyber::ComponentBase;
 
 bool CameraPm::Init()
 {
-    camera_writer_ = node_->CreateWriter<LeadsV3>("/perception/camera_data/");
+    camera_writer_ = node_->CreateWriter<ModelV2>("/perception/camera_data/");
     return true;
 }
 
 bool CameraPm::Proc()
 {
-    auto out_msg = std::make_shared<LeadsV3>();
+    auto out_msg = std::make_shared<ModelV2>();
     //write
     out_msg->set_frame_id(1);
     radar_writer_->Write(out_msg);
