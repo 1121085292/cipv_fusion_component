@@ -24,8 +24,8 @@ enum Error {
 
 // ******* radar state @ 20hz *******
 message RadarData {
-    repeated Error errors = 1;
-    repeated RadarPoint points = 2;
+    optional Error errors = 1;
+    optional RadarPoint points = 2;
     
-    repeated uint64 can_mono_times = 3;
+    optional uint64 can_mono_times = 3;
 }
