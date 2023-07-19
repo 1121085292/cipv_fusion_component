@@ -1,65 +1,78 @@
+load("//tools/install:install.bzl", "install", "install_src_files")
 load("//tools:cpplint.bzl", "cpplint")
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 package(default_visibility = ["//visibility:public"])
 
-cc_binary(
-    name = "libcipv_fusion_component.so",
-    linkshared = True,
-    linkstatic = True,
-    deps = [
-        ":cipv_fusion_component_lib",
-        ":radar_detection_lib",
-        ":car_state_lib",
-        ":camera_detection_lib",
+filegroup(
+    name = "conf",
+    srcs = [
+        ":cipv.dag",
+        ":cipv.launch",
     ],
 )
 
-cc_library(
-    name = "cipv_fusion_component_lib",
-    srcs = ["cipv_fusion_component.cc"],
-    hdrs = ["cipv_fusion_component.h"],
-    alwayslink = True,    
-    deps = [
-        "//cyber",
-        "//cipv_fusion_component/proto:car_state_cc_proto",
+install(
+    name = "install",
+    data = [
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
         "//cipv_fusion_component/proto:radar_detection_cc_proto",
+        "//cipv_fusion_component/proto:car_state_cc_proto",
+        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
+        "cyberfile.xml",
+    ],
+    data_dest = "cipv_fusion_component",
+    library_dest = "cipv_fusion_component/lib",
+    library_strip_prefix = ["component", "proto"],
+    targets = [
+        "//cipv_fusion_component/component:libcipv_fusion_component.so",
+        "//cipv_fusion_component/proto:camera_detection_cc_proto",
+        "//cipv_fusion_component/proto:radar_detection_cc_proto",
+        "//cipv_fusion_component/proto:car_state_cc_proto",
         "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
     ],
-)
-
-cc_library(
-    name = "radar_detection_lib",
-    srcs = ["radar_detection_component.cc"],
-    hdrs = ["radar_detection_component.h"],
-    alwayslink = True,
     deps = [
-        "//cyber",
-        "//cipv_fusion_component/proto:radar_detection_cc_proto",
+        "pb_headers",
+        ":dag",
+        ":launch",
     ],
 )
 
-cc_library(
-    name = "car_state_lib",
-    srcs = ["car_state_component.cc"],
-    hdrs = ["car_state_component.h"],
-    alwayslink = True,
-    deps = [
-        "//cyber",
-        "//cipv_fusion_component/proto:car_state_cc_proto",
-    ],
-)
-# # -----------------------------------------
-cc_library(
-    name = "camera_detection_lib",
-    srcs = ["camera_detection_component.cc"],
-    hdrs = ["camera_detection_component.h"],
-    alwayslink = True,
-    deps = [
-        "//cyber",
+install(
+    name = "pb_headers",
+    data = [
         "//cipv_fusion_component/proto:camera_detection_cc_proto",
+        "//cipv_fusion_component/proto:radar_detection_cc_proto",
+        "//cipv_fusion_component/proto:car_state_cc_proto",
+        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
     ],
+    data_dest = "cipv_fusion_component/include"
 )
 
-cpplint()
+install(
+    name = "dag",
+    data = [":cipv.dag"],
+    data_dest = "cipv_fusion_component/dag"
+)
+
+install(
+    name = "launch",
+    data = [":cipv.launch"],
+    data_dest = "cipv_fusion_component/launch"
+)
+
+install_src_files(
+    name = "headers",
+    src_dir = ["component"],
+    dest = "cipv_fusion_component/include",
+    filter = "*.h",
+)
+
+install_src_files(
+    name = "install_src",
+    src_dir = ["."],
+    dest = "cipv_fusion_component/component",
+    filter = "*",
+    deps = [
+        ":headers"
+    ],
+)
