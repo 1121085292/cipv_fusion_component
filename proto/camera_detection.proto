@@ -24,6 +24,8 @@ message LeadDataV3 {
     repeated float a_std = 11;
 }
 
-message LeadsV3 {
-    repeated LeadDataV3 lead_data_v3 = 1;
+message ModelV2 {
+    optional uint32 frame_id = 1;
+    optional uint63 timestamp_eof = 2;
+    repeated LeadDataV3 leadsV3 = 3;
 }
