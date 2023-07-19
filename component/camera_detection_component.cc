@@ -10,7 +10,8 @@ bool CameraPm::Init()
 bool CameraPm::Proc()
 {
     auto out_msg = std::make_shared<LeadsV3>();
-
+    //write
+    out_msg->set_frame_id(1);
     radar_writer_->Write(out_msg);
 
     return true;
