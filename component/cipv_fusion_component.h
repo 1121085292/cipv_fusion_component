@@ -11,18 +11,18 @@
 #include "cipv_fusion_component/proto/cipv_fusion.pb.h"
 
 using apollo::cyber::Component;
-using cipv_fusion_component::proto::LeadsV3;
+using cipv_fusion_component::proto::ModelV2;
 using cipv_fusion_component::proto::RadarData;
 using cipv_fusion_component::proto::CarState;
 using cipv_fusion_component::proto::RadarState;
 
-class CipvFusionComponent : public Component<RadarData, CarState>{
+class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
   public:
     bool Init() override;
 
     bool Proc(const std::shared_ptr<RadarData>& radar,
               const std::shared_ptr<CarState>& car,
-              const std::shared_ptr<LeadsV3>& camera) override;
+              const std::shared_ptr<ModelV2>& camera) override;
 
   private:
     //publisher

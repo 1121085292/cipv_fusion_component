@@ -15,7 +15,7 @@ bool CameraPm::Proc()
     //write
     out_msg->set_frame_id(frame_id_++);
     out_msg->set_timestamp_eof(timestamp_++);
-    radar_writer_->Write(out_msg);
+    camera_writer_->Write(out_msg);
 
     return true;
 }

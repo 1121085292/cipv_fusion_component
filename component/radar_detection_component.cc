@@ -12,7 +12,7 @@ bool RadarPm::Proc()
     auto out_msg = std::make_shared<RadarData>();
     static uint64_t time = 0;
     
-    out_msg->add_can_mono_times(time++);
+    out_msg->set_can_mono_times(time++);
     radar_writer_->Write(out_msg);
 
     return true;

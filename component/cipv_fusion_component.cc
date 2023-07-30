@@ -14,13 +14,17 @@ bool CipvFusionComponent::Init()
 
 bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
                                 const std::shared_ptr<CarState>& car,
-                                const std::shared_ptr<LeadsV3>& camera)
+                                const std::shared_ptr<ModelV2>& camera)
 {
     car->v_ego();
     auto out_msg = std::make_shared<RadarState>();
-    out_msg->add_can_mono_times(time);
+    auto time = radar->can_mono_times();
+    out_msg->set_can_mono_times(time);
 
     fusion_writer_->Write(out_msg);
+    AINFO << "Enter cipv fusion component, message timestamps:"
+        << radar->md_mono_time() << "current timestamps:"
+        << max(car->can_mono_times(), camera->timestamp_eof());
     return true;
 }
 
