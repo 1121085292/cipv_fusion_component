@@ -1,6 +1,7 @@
 //publish node
 
 #include "cipv_fusion_component/component/cipv_fusion_component.h"
+#include "cipv_fusion_component.h"
 
 using apollo::cyber::ComponentBase;
 
@@ -25,33 +26,20 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
     AINFO << "Enter cipv fusion component, message timestamps:"
         << radar->md_mono_time() << "current timestamps:"
         << max(car->can_mono_times(), camera->timestamp_eof());
+
+    bool status = InternalProc(radar, car, camera, out_msg);
+    if (status) {
+        fusion_writer_->Write(out_msg);
+        AINFO << "Send cipv output message.";
+    }
     return true;
 }
 
-// bool RadarDetectionComponent::Proc(const std::shared_ptr<LeadsV3>& camera,
-//                                 const std::shared_ptr<RadarData>& radar,
-//                                 const std::shared_ptr<CarState>& car_info)
-// {       
-//     // AINFO << "Enter cipv fusion component, message timestamps:"
-//     //       << radar->md_mono_time() << "current timestamps:"
-//     //       << 
-//     auto out_msg = std::make_shared<RadarState>();
-//     bool status = InternalProc(camera, radar, car_info, out_msg);
-//     if (status) {
-//         fusion_writer_->Write(out_msg);
-//         AINFO << "Send cipv output message.";
-//     }
-//     return status;
-// }
+bool CipvFusionComponent::InterProc(const std::shared_ptr<RadarData> &radar, 
+                                const std::shared_ptr<CarState> &car, 
+                                const std::shared_ptr<ModelV2> &camera, 
+                                std::shared_ptr<RadarState> &out_msg)
+{
 
-
-// bool RadarDetectionComponent::InternalProc(const std::shared_ptr<LeadsV3>& camera,
-//                                 const std::shared_ptr<RadarData>& radar,
-//                                 const std::shared_ptr<CarState>& car_info,
-//                                 std::shared_ptr<RadarState>& out_msg) {
-
-//     uint64_t canmonotime = radar->can_mono_times();
-//     out_msg->add_can_mono_times(canmonotime);
-
-//     return true;
-// }
+    return true;
+}

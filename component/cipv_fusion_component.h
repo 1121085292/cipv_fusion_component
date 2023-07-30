@@ -28,5 +28,10 @@ class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
     //publisher
     std::shared_ptr<apollo::cyber::Writer<RadarState>> fusion_writer_;
 
+    bool InterProc(const std::shared_ptr<RadarData>& radar,
+              const std::shared_ptr<CarState>& car,
+              const std::shared_ptr<ModelV2>& camera,
+              std::shared_ptr<RadarState>& out_msg);
+
 };
 CYBER_REGISTER_COMPONENT(CipvFusionComponent);
