@@ -24,8 +24,8 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
 
     fusion_writer_->Write(out_msg);
     AINFO << "Enter cipv fusion component, message timestamps:"
-        << radar->md_mono_time() << "current timestamps:"
-        << max(car->can_mono_times(), camera->timestamp_eof());
+        << radar->can_mono_times() << "current timestamps:"
+        << std::max(car->can_mono_times(), camera->timestamp_eof());
 
     bool status = InternalProc(radar, car, camera, out_msg);
     if (status) {
@@ -35,10 +35,10 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
     return true;
 }
 
-bool CipvFusionComponent::InterProc(const std::shared_ptr<RadarData> &radar, 
-                                const std::shared_ptr<CarState> &car, 
-                                const std::shared_ptr<ModelV2> &camera, 
-                                std::shared_ptr<RadarState> &out_msg)
+bool CipvFusionComponent::InternalProc(const std::shared_ptr<RadarData>& radar, 
+                                    const std::shared_ptr<CarState>& car, 
+                                    const std::shared_ptr<ModelV2>& camera, 
+                                    std::shared_ptr<RadarState>& out_msg)
 {
 
     return true;
