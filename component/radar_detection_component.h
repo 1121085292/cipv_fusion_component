@@ -17,5 +17,6 @@ class RadarPm : public apollo::cyber::TimerComponent {
   private:
     std::shared_ptr<apollo::cyber::Writer<RadarData>> radar_writer_ = nullptr;
 
+    static uint64_t time;
 };
 CYBER_REGISTER_COMPONENT(RadarPm);

@@ -36,3 +36,16 @@ message RadarState {
     optional LeadData lead_two = 6;
     optional float cum_lag_ms = 7;
 }
+
+message LiveTracks {
+    optional int32 track_id = 1;
+    optional float d_rel = 2;
+    optional float y_rel = 3;
+    optional float v_rel = 4;
+    optional float a_rel = 5;
+    optional float timestamp = 6;
+    optional float status = 7;
+    optional float current_time = 8;
+    optional bool stationary = 9;
+    optional bool oncoming = 10;
+}

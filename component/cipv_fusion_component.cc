@@ -10,6 +10,7 @@ bool CipvFusionComponent::Init()
     // seq_num = 0.0f;
     //init publisher
     fusion_writer_ = ComponentBase::node_->CreateWriter<RadarState>("/perception/output/cipv/");
+    inner_fusion_writer_ = ComponentBase::node_->CreateWriter<LiveTracks>("/perception/UI/cipv/");
     return true;
 }
 
@@ -17,10 +18,8 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
                                 const std::shared_ptr<CarState>& car,
                                 const std::shared_ptr<ModelV2>& camera)
 {
-    car->v_ego();
+
     auto out_msg = std::make_shared<RadarState>();
-    auto time = radar->can_mono_times();
-    out_msg->set_can_mono_times(time);
 
     fusion_writer_->Write(out_msg);
     AINFO << "Enter cipv fusion component, message timestamps:"
@@ -40,6 +39,13 @@ bool CipvFusionComponent::InternalProc(const std::shared_ptr<RadarData>& radar,
                                     const std::shared_ptr<ModelV2>& camera, 
                                     std::shared_ptr<RadarState>& out_msg)
 {
+    // camera
 
     return true;
+}
+
+double CipvFusionComponent::LaplacianCdf(double x, double mu, double b)
+{
+    b = std::max(b, 1e-4);
+    return std::exp(-std::abs(x - mu)/b);
 }
