@@ -9,19 +9,19 @@ message LeadDataV3 {
     //字段格式：字段规则、数据类型、字段名、编号
     optional float prob = 1;            // probability that car is your lead at time t
     optional float prob_time = 2;
-    repeated float t = 3;
+    optional float t = 3;
 
     // x and y are relative position in device frame
     // v absolute norm speed
     // a is derivative of v
-    repeated float x = 4;
-    repeated float x_std = 5;
-    repeated float y = 6;
-    repeated float y_std = 7;
-    repeated float v = 8;
-    repeated float v_std = 9;
-    repeated float a = 10;
-    repeated float a_std = 11;
+    optional float x = 4;
+    optional float x_std = 5;
+    optional float y = 6;
+    optional float y_std = 7;
+    optional float v = 8;
+    optional float v_std = 9;
+    optional float a = 10;
+    optional float a_std = 11;
 }
 
 message ModelV2 {
