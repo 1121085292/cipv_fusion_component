@@ -1,21 +1,23 @@
-#include "cipv_fusion_component/component/camera_detection_component.h"
-using apollo::cyber::ComponentBase;
+#pragma once
+#include <memory>
 
-bool CameraPm::Init()
-{
-    frame_id_ = 0;
-    timestamp_ = 123456789;
-    camera_writer_ = node_->CreateWriter<ModelV2>("/perception/camera_data/");
-    return true;
-}
+#include "cyber/class_loader/class_loader.h"
+#include "cyber/component/timer_component.h"
+#include "cyber/component/component.h"
+#include "cyber/cyber.h"
+#include "cipv_fusion_component/proto/camera_detection.pb.h"
 
-bool CameraPm::Proc()
-{
-    auto out_msg = std::make_shared<ModelV2>();
-    //write
-    out_msg->set_frame_id(frame_id_++);
-    out_msg->set_timestamp_eof(timestamp_++);
-    camera_writer_->Write(out_msg);
+using cipv_fusion_component::proto::ModelV2;
 
-    return true;
-}
+class CameraPm : public apollo::cyber::TimerComponent {
+  public:
+    bool Init() override;
+    bool Proc() override;
+
+  private:
+    static uint32_t frame_id_;
+    static uint64_t timestamp_;
+    std::shared_ptr<apollo::cyber::Writer<ModelV2>> camera_writer_ = nullptr;
+
+};
+CYBER_REGISTER_COMPONENT(CameraPm);
