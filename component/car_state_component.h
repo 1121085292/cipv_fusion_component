@@ -15,7 +15,7 @@ class CarPm : public apollo::cyber::TimerComponent {
     bool Proc() override;
 
   private:
-    int speed;
+    float speed;
     std::shared_ptr<apollo::cyber::Writer<CarState>> car_writer_ = nullptr;
 
 };
