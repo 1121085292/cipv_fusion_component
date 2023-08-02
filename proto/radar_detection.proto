@@ -27,5 +27,5 @@ message RadarData {
     optional Error errors = 1;
     repeated RadarPoint points = 2;
     
-    optional uint64 can_mono_times = 3;
+    optional uint64 can_mono_time = 3;
 }
