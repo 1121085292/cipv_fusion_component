@@ -41,7 +41,7 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
         << radar->can_mono_time() << "current timestamps:"
         << current_time;
 
-    bool status = InternalProc(rr, car, camera, out_msg);
+    bool status = InternalProc(radar, car, camera, out_msg);
     if (status) {
         fusion_writer_->Write(out_msg);
         AINFO << "Send cipv output message.";
