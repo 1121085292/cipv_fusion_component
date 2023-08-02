@@ -27,7 +27,7 @@ message LeadData {
 
 // ******* radar state @ 20hz *******
 message RadarState {
-    optional uint64 can_mono_times = 1;
+    optional uint64 can_mono_time = 1;
     optional uint64 md_mono_time = 2;
     optional uint64 car_state_mono_time = 3;
     repeated cipv_fusion_component.proto.Error radar_errors = 4;
