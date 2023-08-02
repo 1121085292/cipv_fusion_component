@@ -19,6 +19,7 @@ cc_library(
     name = "cipv_fusion_component_lib",
     srcs = ["cipv_fusion_component.cc"],
     hdrs = ["cipv_fusion_component.h"],
+    visibility = ["//visibility:private"],
     alwayslink = True,    
     deps = [
         "//cyber",
@@ -33,6 +34,7 @@ cc_library(
     name = "radar_detection_lib",
     srcs = ["radar_detection_component.cc"],
     hdrs = ["radar_detection_component.h"],
+    visibility = ["//visibility:private"],
     alwayslink = True,
     deps = [
         "//cyber",
@@ -44,6 +46,7 @@ cc_library(
     name = "car_state_lib",
     srcs = ["car_state_component.cc"],
     hdrs = ["car_state_component.h"],
+    visibility = ["//visibility:private"],
     alwayslink = True,
     deps = [
         "//cyber",
@@ -55,6 +58,7 @@ cc_library(
     name = "camera_detection_lib",
     srcs = ["camera_detection_component.cc"],
     hdrs = ["camera_detection_component.h"],
+    visibility = ["//visibility:private"],
     alwayslink = True,
     deps = [
         "//cyber",

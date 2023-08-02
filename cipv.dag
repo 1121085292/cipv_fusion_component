@@ -5,7 +5,7 @@ module_config {
         class_name : "RadarPm"
         config {
             name : "RadarPublishComponent"
-            interval : 1000
+            interval : 100
         }
     }
 
@@ -13,7 +13,7 @@ module_config {
         class_name : "CarPm"
         config {
             name : "CarPublishComponent"
-            interval : 1000
+            interval : 10
         }
     }
 
@@ -21,7 +21,7 @@ module_config {
         class_name : "CameraPm"
         config {
             name : "CameraPublishComponent"
-            interval : 1000
+            interval : 50
         }
     }
 

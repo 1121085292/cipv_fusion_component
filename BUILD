@@ -25,10 +25,10 @@ install(
     library_strip_prefix = ["component", "proto"],
     targets = [
         "//cipv_fusion_component/component:libcipv_fusion_component.so",
-        "//cipv_fusion_component/proto:camera_detection_cc_proto",
-        "//cipv_fusion_component/proto:radar_detection_cc_proto",
-        "//cipv_fusion_component/proto:car_state_cc_proto",
-        "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
+        # "//cipv_fusion_component/proto:camera_detection_cc_proto",
+        # "//cipv_fusion_component/proto:radar_detection_cc_proto",
+        # "//cipv_fusion_component/proto:car_state_cc_proto",
+        # "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
     ],
     deps = [
         "pb_headers",
@@ -62,7 +62,7 @@ install(
 
 install_src_files(
     name = "headers",
-    src_dir = ["component"],
+    src_dir = ["."],
     dest = "cipv_fusion_component/include",
     filter = "*.h",
 )

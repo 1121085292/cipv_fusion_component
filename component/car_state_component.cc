@@ -12,8 +12,8 @@ bool CarPm::Proc()
 {
     auto out_msg = std::make_shared<CarState>();
     out_msg->set_v_ego(100);
-    static uint64 can_mono_time = 345678;
-    out_msg->set_can_mono_time(can_mono_time++);
+    // // static uint64_t can_mono_time = 345678;
+    // // out_msg->set_can_mono_time(can_mono_time++);
     car_writer_->Write(out_msg);
 
     return true;

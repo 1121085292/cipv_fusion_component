@@ -6,7 +6,6 @@ using apollo::cyber::ComponentBase;
 
 bool CipvFusionComponent::Init()
 {   
-    // seq_num = 0.0f;
     current_time = 0;
     v_ego = 0;
     ready = false;

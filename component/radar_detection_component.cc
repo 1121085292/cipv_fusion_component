@@ -14,7 +14,7 @@ bool RadarPm::Proc()
     // std::vector<std::shared_ptr<RadarData>> radar;
     auto out_msg = std::make_shared<RadarData>();
     out_msg->set_errors(cipv_fusion_component::proto::Error::CANERROR);
-    out_msg->set_can_mono_times(time++);
+    out_msg->set_can_mono_time(time++);
 
     std::vector<std::shared_ptr<RadarPoint>> PointsPtr;
     auto point1 = std::make_shared<RadarPoint>();

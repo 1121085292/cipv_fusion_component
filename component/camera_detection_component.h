@@ -15,8 +15,7 @@ class CameraPm : public apollo::cyber::TimerComponent {
     bool Proc() override;
 
   private:
-    static uint32_t frame_id_;
-    static uint64_t timestamp_;
+
     std::shared_ptr<apollo::cyber::Writer<ModelV2>> camera_writer_ = nullptr;
 
 };

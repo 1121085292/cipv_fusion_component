@@ -37,6 +37,10 @@ class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
                     std::shared_ptr<RadarState>& out_msg);
     double LaplacianCdf(double x, double mu, double b);
     
+    uint64_t current_time;
+    double v_ego;
+    std::vector<double> v_ego_hist;
+    bool ready;
     std::deque<RadarData> radarDataDeque;
 };
 CYBER_REGISTER_COMPONENT(CipvFusionComponent);
