@@ -1,7 +1,6 @@
 //publish node
 
 #include "cipv_fusion_component/component/cipv_fusion_component.h"
-#include "cipv_fusion_component.h"
 
 using apollo::cyber::ComponentBase;
 
@@ -21,7 +20,6 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
 
     auto out_msg = std::make_shared<RadarState>();
 
-    fusion_writer_->Write(out_msg);
     AINFO << "Enter cipv fusion component, message timestamps:"
         << radar->can_mono_times() << "current timestamps:"
         << std::max(car->can_mono_times(), camera->timestamp_eof());
