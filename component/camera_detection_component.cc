@@ -1,23 +1,56 @@
-#pragma once
-#include <memory>
+#include "cipv_fusion_component/component/camera_detection_component.h"
+using apollo::cyber::ComponentBase;
+using cipv_fusion_component::proto::LeadDataV3;
 
-#include "cyber/class_loader/class_loader.h"
-#include "cyber/component/timer_component.h"
-#include "cyber/component/component.h"
-#include "cyber/cyber.h"
-#include "cipv_fusion_component/proto/camera_detection.pb.h"
+bool CameraPm::Init()
+{
+    frame_id_ = 0;
+    timestamp_ = 234567;
+    camera_writer_ = node_->CreateWriter<ModelV2>("/perception/camera_data/");
+    return true;
+}
 
-using cipv_fusion_component::proto::ModelV2;
+bool CameraPm::Proc()
+{
+    auto out_msg = std::make_shared<ModelV2>();
+    //write
+    out_msg->set_frame_id(frame_id_++);
+    out_msg->set_timestamp_eof(timestamp_++);
+    // leadDataV3(0s，2s，4s)
+    std::vector<std::shared_ptr<LeadDataV3>> CameraPtr;
+    auto leadsV3_1 = std::make_shared<LeadDataV3>();
+    leadsV3_1->set_prob(0.8);
+    leadsV3_1->set_prob_time(0);
+    leadsV3_1->set_time(0);
+    leadsV3_1->set_x(10.2);
+    leadsV3_1->set_x_std(0.8);
+    leadsV3_1->set_y(5.2);
+    leadsV3_1->set_y_std(0.9);
+    leadsV3_1->set_v(15.3);
+    leadsV3_1->set_v_std(0.77);
+    leadsV3_1->set_a(2.1);
+    leadsV3_1->set_a_std(0.6);
+    CameraPtr.push_back(leadsV3_1);
 
-class CameraPm : public apollo::cyber::TimerComponent {
-  public:
-    bool Init() override;
-    bool Proc() override;
+    auto leadsV3_2 = std::make_shared<LeadDataV3>();
+    leadsV3_2->set_prob(0.8);
+    leadsV3_2->set_prob_time(2);
+    leadsV3_2->set_time(2);
+    leadsV3_2->set_x(10.2);
+    leadsV3_2->set_x_std(0.8);
+    leadsV3_2->set_y(5.2);
+    leadsV3_2->set_y_std(0.9);
+    leadsV3_2->set_v(15.3);
+    leadsV3_2->set_v_std(0.77);
+    leadsV3_2->set_a(2.1);
+    leadsV3_2->set_a_std(0.6);
+    CameraPtr.push_back(leadsV3_2);
 
-  private:
-    static uint32_t frame_id_;
-    static uint64_t timestamp_;
-    std::shared_ptr<apollo::cyber::Writer<ModelV2>> camera_writer_ = nullptr;
+    for (const auto& cam : CameraPtr) {
+        auto new_cam = out_msg->add_leadsV3();
+        new_cam->CopyFrom(*cam);
+    }
+    camera_writer_->Write(out_msg);
 
-};
-CYBER_REGISTER_COMPONENT(CameraPm);
+    return true;
+}
