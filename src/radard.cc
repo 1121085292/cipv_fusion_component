@@ -29,13 +29,13 @@ void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
     }
     current_time = 1e-9 * max_time;
 
-    if (log_mono_time_["carState"]) {
+    if (sm.UpdateSensorData("carState")) {
         v_ego = rr["carState"].vEgo;
         v_ego_hist.push_back(v_ego);
     }
 
     // 检查 modelV2 数据是否更新
-    if (log_mono_time_["modelV2"]) {
+    if (sm.UpdateSensorData("modelV2")) {
         ready = true;
     }
 }
