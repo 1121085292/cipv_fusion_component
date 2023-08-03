@@ -1,10 +1,8 @@
 #include "cipv_fusion_component/component/radar_detection_component.h"
 using apollo::cyber::ComponentBase;
-using cipv_fusion_component::proto::RadarPoint;
 
 bool RadarPm::Init()
 {
-    time = 123456;
     radar_writer_ = node_->CreateWriter<RadarData>("/canbus/radar_data/");
     return true;
 }
@@ -14,6 +12,7 @@ bool RadarPm::Proc()
     // std::vector<std::shared_ptr<RadarData>> radar;
     auto out_msg = std::make_shared<RadarData>();
     out_msg->set_errors(cipv_fusion_component::proto::Error::CANERROR);
+    static uint64_t time = 123456;
     out_msg->set_can_mono_time(time++);
 
     std::vector<std::shared_ptr<RadarPoint>> PointsPtr;
