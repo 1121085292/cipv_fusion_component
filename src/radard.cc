@@ -30,7 +30,7 @@ void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
     current_time = 1e-9 * max_time;
 
     if (sm.UpdateSensorData("carState")) {
-        v_ego = rr["carState"].vEgo;
+        v_ego = sm["carState"].v_ego();
         v_ego_hist.push_back(v_ego);
     }
 
@@ -38,4 +38,32 @@ void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
     if (sm.UpdateSensorData("modelV2")) {
         ready = true;
     }
+   // 遍历RadarData中的RadarPoint，并存储到unordered_map中
+    for (const RadarPoint& pt : rr.points()) {
+        ar_pts[pt.track_id()] = pt;
+    }
+
+    // 移除元数据中缺失的数据点
+    for (auto it = tracks.begin(); it != tracks.end();) {
+        int trackId = it->first;
+        if (ar_pts.find(trackId) == ar_pts.end()) {
+            // 当元数据中的trackId在ar_pts中找不到时，从unordered_map中移除该轨迹
+            it = tracks.erase(it);
+        } else {
+            // 否则，检查轨迹信息字典中是否有数据，如果没有，则插入一个空字典
+            if (it->second.empty()) {
+                it->second = std::map<std::string, Track>();
+            }
+            // 继续遍历下一个轨迹
+            ++it;
+        }
+    }
+    // 遍历ar_pts中的数据点并存储到rpt中
+    for (const auto& pair : ar_pts) {
+        int trackId = pair.first;
+        const RadarPoint& rpt = pair.second;
+        
+    }
+
+    
 }

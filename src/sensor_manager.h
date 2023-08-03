@@ -14,10 +14,15 @@ class SensorManager {
     };
 
     bool UpdateSensorData(const std::string& sensorName);
+
+    CarState& operator[](const std::string& key) {
+        // Perform any additional checks or handling here if needed
+        return carState;
+    }
   private:
       // LogMonoTime 是一个存储时间戳的数据类型
     LogMonoTime log_mono_time_;
-
+    CarState carState;
 
 };
 
