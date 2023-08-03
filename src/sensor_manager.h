@@ -13,7 +13,7 @@ class SensorManager {
         return log_mono_time_;
     };
 
-    void UpdateSensorData(const std::string& sensorName, bool isUpdated);
+    bool UpdateSensorData(const std::string& sensorName);
   private:
       // LogMonoTime 是一个存储时间戳的数据类型
     LogMonoTime log_mono_time_;
