@@ -7,7 +7,7 @@ SensorManager::SensorManager(RadarData& rr, ModelV2& camera, CarState& car) {
     log_mono_time_["carState"] = car.can_mono_time();
 
 }
-void SensorManager::UpdateSensorData(const std::string &sensorName, bool isUpdated)
+bool SensorManager::UpdateSensorData(const std::string &sensorName)
 {
-    log_mono_time_[sensorName] = isUpdated;
+    return log_mono_time_[sensorName];
 }
