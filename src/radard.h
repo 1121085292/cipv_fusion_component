@@ -6,6 +6,7 @@
 #include "cipv_fusion_component/src/kalman_filter.h"
 #include "cipv_fusion_component/src/sensor_manager.h"
 #include "cipv_fusion_component/src/track.h"
+#include "cipv_fusion_component/src/fast_cluster.h"
 
 #include "cipv_fusion_component/src/meta.h"
 

@@ -6,6 +6,7 @@
 #include "cipv_fusion_component/proto/radar_detection.pb.h"
 
 using cipv_fusion_component::proto::ModelV2;
+using cipv_fusion_component::proto::LeadDataV3;
 using cipv_fusion_component::proto::RadarData;
 using cipv_fusion_component::proto::CarState;
 using cipv_fusion_component::proto::RadarState;

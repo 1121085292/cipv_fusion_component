@@ -79,39 +79,32 @@ void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
     for (int iden : idens) {
         track_pts.push_back(tracks[iden].GetKeyForCluster());
     }
-
-    // 如果有多个点，则进行聚类
+    // If we have multiple points, cluster them
+    std::vector<int> cluster_idxs = cluster_points_centroid(track_pts, 2.5); // 计算聚类
+    int max_cluster_idx = *std::max_element(cluster_idxs.begin(), cluster_idxs.end());
+    std::vector<std::unique_ptr<Cluster>> clusters(max_cluster_idx + 1);
     if (track_pts.size() > 1) {
-        std::vector<double> flattened_pts;
-        for (const auto& track : track_pts) {
-            // 获取 track 的 key for cluster 数据，并将其转换为一维数组
-            std::vector<double> key = track.GetKeyForCluster();
-            flattened_pts.insert(flattened_pts.end(), key.begin(), key.end());
-        }
-
-        // 聚类结果的标签数组
-        std::vector<int> cluster_idxs(track_pts.size());
-
-        // 聚类阈值
-        double dist = 2.5;
-
-        // 调用聚类函数进行计算
-        cluster_points_centroid(static_cast<int>(track_pts.size()), static_cast<int>(track_pts[0].size()), flattened_pts.data(), dist, cluster_idxs.data());
-
-        // 创建 Cluster 对象并进行聚类 std::vector<Cluster> clusters(*std::max_element(cluster_idxs.begin(), cluster_idxs.end()) + 1);
-        for (size_t idx = 0; idx < track_pts.size(); ++idx) {
+        for (int idx = 0; idx < track_pts.size(); ++idx) {
             int cluster_i = cluster_idxs[idx];
             if (clusters[cluster_i] == nullptr) {
-                clusters[cluster_i] = Cluster();
+                clusters[cluster_i] = std::make_unique<Cluster>();
             }
-            clusters[cluster_i].add(track_pts[idx]);
+            clusters[cluster_i]->add(tracks[idens[idx]]);
         }
     } else if (track_pts.size() == 1) {
-        // 仅有一个点时的处理
         std::vector<int> cluster_idxs = {0};
         std::vector<Cluster> clusters(1);
-        clusters[0].add(track_pts[0]);
+        clusters[0].add(tracks[idens[0]]);
     } else {
-        std::vector<Cluster> clusters;
+        std::vector<Cluster> clusters; // 此处clusters为空，表示没有聚类
     }
+
+    // 如果是一个新的数据点，将加速度重置为聚类中的其余轨迹的平均值
+    for (int idx = 0; idx < track_pts.size(); ++idx) {
+        if (tracks[idens[idx]].Getcnt() <= 1) {
+            double aLeadK = clusters[cluster_idxs[idx]]->aLeadK();
+            double aLeadTau = clusters[cluster_idxs[idx]]->aLeadTau();
+            tracks[idens[idx]].ResetaLead(aLeadK, aLeadTau);
+        }
+}
 }

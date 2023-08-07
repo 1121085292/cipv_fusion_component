@@ -10,6 +10,7 @@
 #ifndef fastclustercpp_H
 #define fastclustercpp_H
 
+#include <vector>
 //
 // Assigns cluster labels (0, ..., nclust-1) to the n points such
 // that the cluster result is split into nclust clusters.
@@ -73,6 +74,6 @@ enum hclust_fast_methods {
 void hclust_pdist(int n, int m, double* pts, double* out);
 void cluster_points_centroid(int n, int m, double* pts, double dist, int* idx);
 
-std::vector<int> cluster_points_centroid(pts, dist);
+std::vector<int> cluster_points_centroid( std::vector<std::vector<double>>& pts, double dist);
 
 #endif
