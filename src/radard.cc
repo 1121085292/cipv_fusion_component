@@ -80,5 +80,38 @@ void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
         track_pts.push_back(tracks[iden].GetKeyForCluster());
     }
 
-    
+    // 如果有多个点，则进行聚类
+    if (track_pts.size() > 1) {
+        std::vector<double> flattened_pts;
+        for (const auto& track : track_pts) {
+            // 获取 track 的 key for cluster 数据，并将其转换为一维数组
+            std::vector<double> key = track.GetKeyForCluster();
+            flattened_pts.insert(flattened_pts.end(), key.begin(), key.end());
+        }
+
+        // 聚类结果的标签数组
+        std::vector<int> cluster_idxs(track_pts.size());
+
+        // 聚类阈值
+        double dist = 2.5;
+
+        // 调用聚类函数进行计算
+        cluster_points_centroid(static_cast<int>(track_pts.size()), static_cast<int>(track_pts[0].size()), flattened_pts.data(), dist, cluster_idxs.data());
+
+        // 创建 Cluster 对象并进行聚类 std::vector<Cluster> clusters(*std::max_element(cluster_idxs.begin(), cluster_idxs.end()) + 1);
+        for (size_t idx = 0; idx < track_pts.size(); ++idx) {
+            int cluster_i = cluster_idxs[idx];
+            if (clusters[cluster_i] == nullptr) {
+                clusters[cluster_i] = Cluster();
+            }
+            clusters[cluster_i].add(track_pts[idx]);
+        }
+    } else if (track_pts.size() == 1) {
+        // 仅有一个点时的处理
+        std::vector<int> cluster_idxs = {0};
+        std::vector<Cluster> clusters(1);
+        clusters[0].add(track_pts[0]);
+    } else {
+        std::vector<Cluster> clusters;
+    }
 }
