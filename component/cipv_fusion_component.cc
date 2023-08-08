@@ -6,6 +6,10 @@ using apollo::cyber::ComponentBase;
 
 bool CipvFusionComponent::Init()
 {   
+    // 从底层读数据
+    // AINFO << "radard is waiting for CarParams";
+    // CarParams carParams = CarParams::from_bytes()
+    // 初始化RadarD对象
     //init publisher
     fusion_writer_ = ComponentBase::node_->CreateWriter<RadarState>("/perception/output/cipv/");
     inner_fusion_writer_ = ComponentBase::node_->CreateWriter<LiveTracks>("/perception/UI/cipv/");
@@ -16,13 +20,20 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
                                 const std::shared_ptr<CarState>& car,
                                 const std::shared_ptr<ModelV2>& camera)
 {   
-    current_time_ = std::max(car->can_mono_time(), camera->timestamp_eof());
-    auto out_msg = std::make_shared<RadarState>();
-    
-    AINFO << "Enter cipv fusion component, message timestamps:"
-        << radar->can_mono_time() << "current timestamps:"
-        << current_time_;
+    SensorManager& sm,
+    const SensorManager::LogMonoTime& logMonoTime = sm.GetLogMonoTime();
+    // 找到最大的时间戳，并将其转换为秒
+    double max_time = 0.0;
+    for (const auto& pair : logMonoTime) {
+        double timestamp = pair.second;
+        if (timestamp > max_time) {
+            max_time = timestamp;
+        }
+    }
+    current_time = 1e-9 * max_time;
+    AINFO << "fusion timestamp: " << current_time;
 
+    auto out_msg = std::make_shared<RadarState>();
     bool status = InternalProc(radar, car, camera, out_msg);
     if (status) {
         fusion_writer_->Write(out_msg);
@@ -39,10 +50,4 @@ bool CipvFusionComponent::InternalProc(const std::shared_ptr<RadarData>& radar,
 
     
     return true;
-}
-
-double CipvFusionComponent::LaplacianCdf(double x, double mu, double b)
-{
-    b = std::max(b, 1e-4);
-    return std::exp(-std::abs(x - mu)/b);
 }
