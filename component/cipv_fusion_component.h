@@ -6,8 +6,7 @@
 #include "cyber/component/component.h"
 #include "cyber/cyber.h"
 
-#include "cipv_fusion_component/src/kalman_filter.h"
-#include "cipv_fusion_component/src/meta.h"
+#include "cipv_fusion_component/src/radard.h"
 
 using apollo::cyber::Component;
 
@@ -28,7 +27,11 @@ class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
                     const std::shared_ptr<CarState>& car,
                     const std::shared_ptr<ModelV2>& camera,
                     std::shared_ptr<RadarState>& out_msg);
-    double LaplacianCdf(double x, double mu, double b);
+
+    double current_time;
+    double v_ego;
+    std::deque<double> v_ego_hist;
+    bool ready;
     
 };
 CYBER_REGISTER_COMPONENT(CipvFusionComponent);

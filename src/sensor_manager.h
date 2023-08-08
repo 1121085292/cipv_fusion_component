@@ -23,6 +23,5 @@ class SensorManager {
       // LogMonoTime 是一个存储时间戳的数据类型
     LogMonoTime log_mono_time_;
     CarState carState;
-
 };
 

@@ -7,12 +7,12 @@ double laplacian_cdf(double x, double mu, double b) {
 
 Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
                             const std::vector<std::unique_ptr<Cluster>>& clusters) {
-    double offset_vision_dist = lead.x(0) - RADAR_TO_CAMERA;
+    double offset_vision_dist = lead.x() - RADAR_TO_CAMERA;
 
     auto prob = [&](const Cluster* c) {
-        double prob_d = laplacian_cdf(c->dRel(), offset_vision_dist, lead.xStd(0));
-        double prob_y = laplacian_cdf(c->yRel(), -lead.y(0), lead.yStd(0));
-        double prob_v = laplacian_cdf(c->vRel() + v_ego, lead.v(0), lead.vStd(0));
+        double prob_d = laplacian_cdf(c->dRel(), offset_vision_dist, lead.x_std());
+        double prob_y = laplacian_cdf(c->yRel(), -lead.y(), lead.y_std());
+        double prob_v = laplacian_cdf(c->vRel() + v_ego, lead.v(), lead.v_std());
 
         // 这不是完全准确的，但是是一个不错的启发式方法
         return prob_d * prob_y * prob_v;
@@ -28,7 +28,7 @@ Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead,
     // 如果找不到合理匹配，则返回空指针
     // 静止的雷达点可能是误报
     bool dist_sane = std::abs(cluster->dRel() - offset_vision_dist) < std::max((offset_vision_dist) * 0.25, 5.0);
-    bool vel_sane = (std::abs(cluster->vRel() + v_ego - lead.v(0)) < 10) || (v_ego + cluster->vRel() > 3);
+    bool vel_sane = (std::abs(cluster->vRel() + v_ego - lead.v()) < 10) || (v_ego + cluster->vRel() > 3);
     if (dist_sane && vel_sane) {
         return cluster;
     } else {
@@ -90,16 +90,9 @@ RadarD::RadarD(double radar_ts, int delay) : kalman_params(radar_ts) {
     ready = false;
 }
 
-RadarState RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
-    if (sm.UpdateSensorData("carState")) {
-        v_ego = sm["carState"].v_ego();
-        v_ego_hist.push_back(v_ego);
-    }
-
-    // 检查 modelV2 数据是否更新
-    if (sm.UpdateSensorData("modelV2")) {
-        ready = true;
-    }
+RadarState RadarD::Update(const std::shared_ptr<ModelV2>& camera,
+                        const std::shared_ptr<RadarState>& radarState, 
+                        const RadarData &rr, bool enable_lead) {
     // 创建unordered_map来存储Radar数据点
     std::unordered_map<int, RadarPoint> ar_pts;
    // 遍历RadarData中的RadarPoint，并存储到unordered_map中
@@ -171,9 +164,9 @@ RadarState RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
         }
 }
     if (enable_lead) {
-        if (sm["modelV2"].leadsV3.size() > 1) {
-            radarState.leadOne = get_lead(self.v_ego, self.ready, clusters, sm["modelV2"].leadsV3[0], true);
-            radarState.leadTwo = get_lead(self.v_ego, self.ready, clusters, sm["modelV2"].leadsV3[1], false);
+        if (camera->leadsv3().size() > 1) {
+            radarState->lead_one() = get_lead(v_ego, ready, clusters, camera->leadsv3(0), true);
+            radarState.leadTwo = get_lead(v_ego, ready, clusters, camera->leadsv3(1), false);
         }
     }
     return dat;

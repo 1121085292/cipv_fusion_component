@@ -12,3 +12,4 @@ using cipv_fusion_component::proto::CarState;
 using cipv_fusion_component::proto::RadarState;
 using cipv_fusion_component::proto::LiveTracks;
 using cipv_fusion_component::proto::RadarPoint;
+using cipv_fusion_component::proto::Error;
