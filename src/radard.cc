@@ -1,5 +1,80 @@
 #include "cipv_fusion_component/src/radard.h"
 
+double laplacian_cdf(double x, double mu, double b) {
+    b = std::max(b, 1e-4);
+    return std::exp(-std::abs(x - mu) / b);
+}
+
+Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
+                            const std::vector<std::unique_ptr<Cluster>>& clusters) {
+    double offset_vision_dist = lead.x(0) - RADAR_TO_CAMERA;
+
+    auto prob = [&](const Cluster* c) {
+        double prob_d = laplacian_cdf(c->dRel(), offset_vision_dist, lead.xStd(0));
+        double prob_y = laplacian_cdf(c->yRel(), -lead.y(0), lead.yStd(0));
+        double prob_v = laplacian_cdf(c->vRel() + v_ego, lead.v(0), lead.vStd(0));
+
+        // 这不是完全准确的，但是是一个不错的启发式方法
+        return prob_d * prob_y * prob_v;
+    };
+
+    auto max_prob_cluster_iter = std::max_element(clusters.begin(), clusters.end(), 
+                                [&](const std::unique_ptr<Cluster>& a, const std::unique_ptr<Cluster>& b) {
+        return prob(a.get()) < prob(b.get());
+    });
+
+    Cluster* cluster = (max_prob_cluster_iter != clusters.end()) ? max_prob_cluster_iter->get() : nullptr;
+
+    // 如果找不到合理匹配，则返回空指针
+    // 静止的雷达点可能是误报
+    bool dist_sane = std::abs(cluster->dRel() - offset_vision_dist) < std::max((offset_vision_dist) * 0.25, 5.0);
+    bool vel_sane = (std::abs(cluster->vRel() + v_ego - lead.v(0)) < 10) || (v_ego + cluster->vRel() > 3);
+    if (dist_sane && vel_sane) {
+        return cluster;
+    } else {
+        return nullptr;
+    }
+}
+
+std::map<std::string, double> get_lead(double v_ego, bool ready, 
+                                    const std::vector<std::unique_ptr<Cluster>>& clusters,
+                                    const LeadDataV3& lead_msg, bool low_speed_override = true) {
+    std::map<std::string, double> lead_dict;
+
+    Cluster* cluster = nullptr;
+    if (!clusters.empty() && ready && lead_msg.prob() > 0.5) {
+        cluster = match_vision_to_cluster(v_ego, lead_msg, clusters);
+    }
+
+    if (cluster != nullptr) {
+        lead_dict = cluster->get_RadarState(lead_msg.prob());
+    } else if (cluster == nullptr && ready && lead_msg.prob() > 0.5) {
+        Cluster temp_cluster; // 创建一个临时 Cluster 对象
+        lead_dict = temp_cluster.get_RadarState_from_vision(lead_msg, v_ego);
+    }
+
+    if (low_speed_override) {
+        std::vector<Cluster*> low_speed_clusters;
+        for (const auto& c : clusters) {
+            if (c->potential_low_speed_lead(v_ego)) {
+                low_speed_clusters.push_back(c.get());
+            }
+        }
+
+        if (!low_speed_clusters.empty()) {
+            Cluster* closest_cluster = *std::min_element(low_speed_clusters.begin(), low_speed_clusters.end(), 
+                                    [](const Cluster* a, const Cluster* b) {
+                return a->dRel() < b->dRel();
+            });
+
+            if ((!lead_dict["status"]) || (closest_cluster->dRel() < lead_dict["dRel"])) {
+                lead_dict = closest_cluster->get_RadarState();
+            }
+        }
+    }
+    return lead_dict;
+}
+
 RadarD::RadarD(double radar_ts, int delay) : kalman_params(radar_ts) {
     current_time = 0.0;
 
@@ -15,19 +90,7 @@ RadarD::RadarD(double radar_ts, int delay) : kalman_params(radar_ts) {
     ready = false;
 }
 
-void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
-    const SensorManager::LogMonoTime& logMonoTime = sm.GetLogMonoTime();
-
-    // 找到最大的时间戳，并将其转换为秒
-    double max_time = 0.0;
-    for (const auto& pair : logMonoTime) {
-        double timestamp = pair.second;
-        if (timestamp > max_time) {
-            max_time = timestamp;
-        }
-    }
-    current_time = 1e-9 * max_time;
-
+RadarState RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
     if (sm.UpdateSensorData("carState")) {
         v_ego = sm["carState"].v_ego();
         v_ego_hist.push_back(v_ego);
@@ -107,4 +170,11 @@ void RadarD::Update(SensorManager &sm, RadarData &rr, bool enable_lead) {
             tracks[idens[idx]].ResetaLead(aLeadK, aLeadTau);
         }
 }
+    if (enable_lead) {
+        if (sm["modelV2"].leadsV3.size() > 1) {
+            radarState.leadOne = get_lead(self.v_ego, self.ready, clusters, sm["modelV2"].leadsV3[0], true);
+            radarState.leadTwo = get_lead(self.v_ego, self.ready, clusters, sm["modelV2"].leadsV3[1], false);
+        }
+    }
+    return dat;
 }
