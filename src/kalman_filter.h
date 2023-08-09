@@ -7,15 +7,15 @@ class KalmanFilter {
 public:
     KalmanFilter(double dt);
 
-    std::vector<std::vector<double>> KalmanFilter::GetA() const {
+    std::vector<std::vector<double>> GetA() const {
         return A;
     }
 
-    std::vector<double> KalmanFilter::GetC() const {
+    std::vector<double> GetC() const {
         return C;
     }
 
-    std::vector<std::vector<double>> KalmanFilter::GetK() const {
+    std::vector<std::vector<double>> GetK() const {
         return K;
     }
 
