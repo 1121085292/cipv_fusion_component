@@ -27,12 +27,16 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
                                 const std::shared_ptr<CarState>& car,
                                 const std::shared_ptr<ModelV2>& camera)
 {   
-    double max_time = std::max(car->can_mono_time(), camera->timestamp_eof());
-    current_time = 1e-9 * max_time;
-    AINFO << "fusion timestamp: " << current_time;
+    // double max_time = std::max(car->can_mono_time(), camera->timestamp_eof());
+    // current_time = 1e-9 * max_time;
+    // AINFO << "fusion timestamp: " << current_time;
 
-    auto out_msg = std::make_shared<RadarState>();
-    bool status = InternalProc(radar, car, camera, out_msg);
+    // auto out_msg = std::make_shared<RadarState>();
+    std::shared_ptr<RadarState> out_msg(new (std::nothrow)
+                                                       RadarState);
+    std::shared_ptr<LiveTracks> viz_msg(new (std::nothrow)
+                                                      LiveTracks);
+    bool status = InternalProc(radar, car, camera, out_msg, viz_msg);
     if (status) {
         fusion_writer_->Write(out_msg);
         AINFO << "Send cipv output message.";
@@ -40,10 +44,11 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
     return true;
 }
 
-bool CipvFusionComponent::InternalProc(const std::shared_ptr<RadarData>& radar, 
+bool CipvFusionComponent::InternalProc(const std::shared_ptr<RadarData>& rr, 
                                     const std::shared_ptr<CarState>& car, 
                                     const std::shared_ptr<ModelV2>& camera, 
-                                    std::shared_ptr<RadarState>& out_msg)
+                                    std::shared_ptr<RadarState>& out_msg,
+                                    std::shared_ptr<LiveTracks>& viz_msg)
 {
     if(car->v_ego()){
         v_ego = car->v_ego();
@@ -142,13 +147,13 @@ bool CipvFusionComponent::InternalProc(const std::shared_ptr<RadarData>& radar,
     return true;
 }
 
-double laplacian_cdf(double x, double mu, double b) {
+double CipvFusionComponent::laplacian_cdf(double x, double mu, double b) {
     b = std::max(b, 1e-4);
     return std::exp(-std::abs(x - mu) / b);
 }
 
-Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
-                            const std::vector<std::unique_ptr<Cluster>>& clusters) {
+CipvFusionComponent::match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
+                                        const std::vector<std::unique_ptr<Cluster>>& clusters) {
     double offset_vision_dist = lead.x() - RADAR_TO_CAMERA;
 
     auto prob = [&](const Cluster* c) {
@@ -178,10 +183,10 @@ Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead,
     }
 }
 
-std::map<std::string, double> get_lead(double v_ego, bool ready, 
+std::map<std::string, float> CipvFusionComponent::get_lead(double v_ego, bool ready, 
                                     const std::vector<std::unique_ptr<Cluster>>& clusters,
                                     const LeadDataV3& lead_msg, bool low_speed_override = true) {
-    std::map<std::string, double> lead_dict;
+    std::map<std::string, float> lead_dict;
 
     Cluster* cluster = nullptr;
     if (!clusters.empty() && ready && lead_msg.prob() > 0.5) {
@@ -210,7 +215,7 @@ std::map<std::string, double> get_lead(double v_ego, bool ready,
             });
 
             if ((!lead_dict["status"]) || (closest_cluster->dRel() < lead_dict["dRel"])) {
-                lead_dict = closest_cluster->get_RadarState();
+                lead_dict = closest_cluster->get_RadarState(lead_msg.prob());
             }
         }
     }
