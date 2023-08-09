@@ -10,6 +10,15 @@
 
 using apollo::cyber::Component;
 
+double laplacian_cdf(double x, double mu, double b);
+
+Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead,
+                             const std::vector<std::unique_ptr<Cluster>>& clusters);
+
+std::map<std::string, double> get_lead(double v_ego, bool ready, 
+                                    const std::vector<std::unique_ptr<Cluster>>& clusters,
+                                    const LeadDataV3& lead_msg, bool low_speed_override = true);
+
 class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
   public:
     bool Init() override;
@@ -32,6 +41,6 @@ class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
     double v_ego;
     std::deque<double> v_ego_hist;
     bool ready;
-    
+    bool enable_lead;
 };
 CYBER_REGISTER_COMPONENT(CipvFusionComponent);
