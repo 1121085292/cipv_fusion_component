@@ -4,19 +4,6 @@ load("//tools:cpplint.bzl", "cpplint")
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "radard",
-    srcs = ["radard.cc"],
-    hdrs = ["radard.h"],
-    deps = [
-        ":fast_cluster",
-        ":kalman_filter",
-        ":sensor_manager",
-        ":track",
-        ":meta",
-    ],
-)
-
-cc_library(
     name = "fast_cluster",
     srcs = ["fast_cluster.cc"],
     hdrs = ["fast_cluster.h"],
@@ -48,6 +35,9 @@ cc_library(
     name = "sensor_manager",
     srcs = ["sensor_manager.cc"],
     hdrs = ["sensor_manager.h"],
+    deps = [
+        ":meta",
+    ],
 )
 
 cc_library(
