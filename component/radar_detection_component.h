@@ -5,9 +5,7 @@
 #include "cyber/component/timer_component.h"
 #include "cyber/component/component.h"
 #include "cyber/cyber.h"
-#include "cipv_fusion_component/proto/radar_detection.pb.h"
-
-using cipv_fusion_component::proto::RadarData;
+#include "cipv_fusion_component/src/meta.h"
 
 class RadarPm : public apollo::cyber::TimerComponent {
   public:

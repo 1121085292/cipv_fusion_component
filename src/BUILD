@@ -4,25 +4,37 @@ load("//tools:cpplint.bzl", "cpplint")
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
+    name = "radard",
+    srcs = ["radard.cc",],
+    hdrs = ["radard.h"],
+    deps = [
+        "fast_cluster",
+        "kalman_filter",
+        "track",
+        "meta",
+    ],
+)
+
+cc_library(
     name = "fast_cluster",
-    srcs = ["fast_cluster.cc"],
+    srcs = ["fast_cluster.cc",],
     hdrs = ["fast_cluster.h"],
     deps = [
-        ":fast_cluster_R_dm",
+        "//cipv_fusion_component/src:fast_cluster_R_dm",
     ],
 )
 
 cc_library(
     name = "fast_cluster_R_dm",
-    srcs = ["fast_cluster_R_dm.cc"],
+    srcs = ["fast_cluster_R_dm.hpp"],
     deps = [
-        ":fast_cluster_dm",
+        "//cipv_fusion_component/src:fast_cluster_dm",
     ],
 )
 
 cc_library(
     name = "fast_cluster_dm",
-    srcs = ["fast_cluster_dm.cc"],
+    srcs = ["fast_cluster_dm.hpp"],
 )
 
 cc_library(
@@ -31,14 +43,14 @@ cc_library(
     hdrs = ["kalman_filter.h"],
 )
 
-cc_library(
-    name = "sensor_manager",
-    srcs = ["sensor_manager.cc"],
-    hdrs = ["sensor_manager.h"],
-    deps = [
-        ":meta",
-    ],
-)
+# cc_library(
+#     name = "sensor_manager",
+#     srcs = ["sensor_manager.cc"],
+#     hdrs = ["sensor_manager.h"],
+#     deps = [
+#         ":meta",
+#     ],
+# )
 
 cc_library(
     name = "track",

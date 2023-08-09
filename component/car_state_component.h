@@ -5,9 +5,8 @@
 #include "cyber/component/timer_component.h"
 #include "cyber/component/component.h"
 #include "cyber/cyber.h"
-#include "cipv_fusion_component/proto/car_state.pb.h"
 
-using cipv_fusion_component::proto::CarState;
+#include "cipv_fusion_component/src/meta.h"
 
 class CarPm : public apollo::cyber::TimerComponent {
   public:

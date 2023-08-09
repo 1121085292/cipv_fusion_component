@@ -3,6 +3,7 @@
 //
 // Copyright: Daniel Müllner, 2011 <http://danifold.net>
 //
+#include "cipv_fusion_component/src/fast_cluster_dm.hpp"
 
 struct pos_node {
   t_index pos;

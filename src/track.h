@@ -56,6 +56,12 @@ private:
     // Define SPEED and ACCEL constants if needed
 };
 
+struct TrackCompare {
+    bool operator()(const Track& lhs, const Track& rhs) const {
+        return lhs.Getcnt() < rhs.Getcnt();
+    }
+};
+
 class Cluster {
 public:
     Cluster();
@@ -76,7 +82,7 @@ public:
     bool measured() const;
     bool is_potential_fcw(float model_prob) const;
 
-    std::map<std::string, float> get_RadarState(float model_prob) const;
+    RadarState get_RadarState(float model_prob) const;
     std::map<std::string, float> get_RadarState_from_vision(const LeadDataV3& lead_msg, double v_ego) const;
 
     std::string to_string() const;
@@ -84,5 +90,5 @@ public:
     bool potential_low_speed_lead(double v_ego);
 
 private:
-    std::set<Track> tracks;
+    std::set<Track, TrackCompare> tracks;
 };

@@ -7,8 +7,7 @@
 //            (see the file LICENSE for details)
 //
 
-#ifndef fastclustercpp_H
-#define fastclustercpp_H
+#pragma once
 
 #include <vector>
 //
@@ -75,5 +74,3 @@ void hclust_pdist(int n, int m, double* pts, double* out);
 void cluster_points_centroid(int n, int m, double* pts, double dist, int* idx);
 
 std::vector<int> cluster_points_centroid( std::vector<std::vector<double>>& pts, double dist);
-
-#endif

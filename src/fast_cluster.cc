@@ -13,18 +13,16 @@
 #include <cmath>
 
 
-extern "C" {
+// extern "C" {
 #include "cipv_fusion_component/src/fast_cluster.h"
-}
+// }
+#include "cipv_fusion_component/src/fast_cluster_R_dm.hpp"
 
-// Code by Daniel Müllner
-// workaround to make it usable as a standalone version (without R)
-bool fc_isnan(double x) { return false; }
-#include "fast_cluster_dm.cc"
-#include "fast_cluster_R_dm.cc"
-#include "fast_cluster.h"
+// // Code by Daniel Müllner
+// // workaround to make it usable as a standalone version (without R)
+// bool fc_isnan(double x) { return false; }
 
-extern "C" {
+// extern "C" {
 //
 // Assigns cluster labels (0, ..., nclust-1) to the n points such
 // that the cluster result is split into nclust clusters.
@@ -216,7 +214,7 @@ extern "C" {
     delete[] merge;
     delete[] height;
   }
-}
+// }
 
 std::vector<int> cluster_points_centroid(std::vector<std::vector<double>> &pts, double dist)
 {   

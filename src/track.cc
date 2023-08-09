@@ -156,8 +156,9 @@ bool Cluster::is_potential_fcw(float model_prob) const {
     return model_prob > 0.9;
 }
 
-std::map<std::string, float> Cluster::get_RadarState(float model_prob) const {
-    std::map<std::string, float> radar_state;
+RadarState Cluster::get_RadarState(float model_prob) const {
+    RadarState* radar_state;
+    radar_state->
     radar_state["dRel"] = dRel();
     radar_state["yRel"] = yRel();
     radar_state["vRel"] = vRel();

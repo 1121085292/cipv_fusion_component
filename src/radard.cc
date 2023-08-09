@@ -1,11 +1,11 @@
 #include "cipv_fusion_component/src/radard.h"
 
-double laplacian_cdf(double x, double mu, double b) {
+double RadarD::laplacian_cdf(double x, double mu, double b) {
     b = std::max(b, 1e-4);
     return std::exp(-std::abs(x - mu) / b);
 }
 
-Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
+Cluster* RadarD::match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
                             const std::vector<std::unique_ptr<Cluster>>& clusters) {
     double offset_vision_dist = lead.x() - RADAR_TO_CAMERA;
 
@@ -36,10 +36,11 @@ Cluster* match_vision_to_cluster(double v_ego, const LeadDataV3& lead,
     }
 }
 
-std::map<std::string, double> get_lead(double v_ego, bool ready, 
+std::map<std::string, float> RadarD::get_lead(double v_ego, bool ready, 
                                     const std::vector<std::unique_ptr<Cluster>>& clusters,
                                     const LeadDataV3& lead_msg, bool low_speed_override = true) {
-    std::map<std::string, double> lead_dict;
+    std::map<std::string, float> lead_dict;
+    lead_dict["status"] = false;
 
     Cluster* cluster = nullptr;
     if (!clusters.empty() && ready && lead_msg.prob() > 0.5) {
@@ -60,15 +61,13 @@ std::map<std::string, double> get_lead(double v_ego, bool ready,
                 low_speed_clusters.push_back(c.get());
             }
         }
-
         if (!low_speed_clusters.empty()) {
             Cluster* closest_cluster = *std::min_element(low_speed_clusters.begin(), low_speed_clusters.end(), 
                                     [](const Cluster* a, const Cluster* b) {
                 return a->dRel() < b->dRel();
             });
-
             if ((!lead_dict["status"]) || (closest_cluster->dRel() < lead_dict["dRel"])) {
-                lead_dict = closest_cluster->get_RadarState();
+                lead_dict = closest_cluster->get_RadarState(lead_msg.prob());
             }
         }
     }
@@ -90,13 +89,16 @@ RadarD::RadarD(double radar_ts, int delay) : kalman_params(radar_ts) {
     ready = false;
 }
 
-RadarState RadarD::Update(const std::shared_ptr<ModelV2>& camera,
-                        const std::shared_ptr<RadarState>& radarState, 
-                        const RadarData &rr, bool enable_lead) {
+bool RadarD::Update(const std::shared_ptr<RadarData>& rr, 
+                    const std::shared_ptr<CarState>& car, 
+                    const std::shared_ptr<ModelV2>& camera, 
+                    std::shared_ptr<RadarState>& out_msg,
+                    std::shared_ptr<LiveTracks>& viz_msg,
+                    bool enable_lead) {
     // 创建unordered_map来存储Radar数据点
     std::unordered_map<int, RadarPoint> ar_pts;
    // 遍历RadarData中的RadarPoint，并存储到unordered_map中
-    for (const auto& pt : rr.points()) {
+    for (const auto& pt : rr->points()) {
         ar_pts[pt.track_id()] = pt;
     }
 
@@ -162,11 +164,12 @@ RadarState RadarD::Update(const std::shared_ptr<ModelV2>& camera,
             double aLeadTau = clusters[cluster_idxs[idx]]->aLeadTau();
             tracks[idens[idx]].ResetaLead(aLeadK, aLeadTau);
         }
-}
+    }
+    std::map<std::string, float> radarState;
     if (enable_lead) {
         if (camera->leadsv3().size() > 1) {
-            radarState->lead_one() = get_lead(v_ego, ready, clusters, camera->leadsv3(0), true);
-            radarState.leadTwo = get_lead(v_ego, ready, clusters, camera->leadsv3(1), false);
+            radarState.mutable_lead_one() = get_lead(v_ego, ready, clusters, camera->leadsv3(0), true);
+            out_msg->mutable_lead_two() = get_lead(v_ego, ready, clusters, camera->leadsv3(1), false);
         }
     }
     return dat;

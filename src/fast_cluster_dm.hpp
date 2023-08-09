@@ -34,7 +34,6 @@
   All these implementation treat infinity values correctly. They throw an
   exception if a NaN distance value occurs.
 */
-
 // Older versions of Microsoft Visual Studio do not have the fenv header.
 #ifdef _MSC_VER
 #if (_MSC_VER == 1500 || _MSC_VER == 1600)
@@ -141,11 +140,17 @@ typedef int_fast32_t t_index;
 #endif
 typedef double t_float;
 
+
 /* Method codes.
 
    These codes must agree with the METHODS array in fastcluster.R and the
    dictionary mthidx in fastcluster.py.
 */
+
+// Code by Daniel Müllner
+// workaround to make it usable as a standalone version (without R)
+bool fc_isnan(double x) { return false; }
+
 enum method_codes {
   // non-Euclidean methods
   METHOD_METR_SINGLE           = 0,
@@ -220,6 +225,7 @@ struct node {
 inline bool operator< (const node a, const node b) {
   return (a.dist < b.dist);
 }
+
 
 class cluster_result {
 private:

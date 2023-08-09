@@ -5,9 +5,7 @@
 #include "cyber/component/timer_component.h"
 #include "cyber/component/component.h"
 #include "cyber/cyber.h"
-#include "cipv_fusion_component/proto/camera_detection.pb.h"
-
-using cipv_fusion_component::proto::ModelV2;
+#include "cipv_fusion_component/src/meta.h"
 
 class CameraPm : public apollo::cyber::TimerComponent {
   public:
