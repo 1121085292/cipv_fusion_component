@@ -2,7 +2,7 @@
 
 Track::Track(double v_lead, const KalmanFilter& kalman_params) {
     cnt = 0;
-    aLeadTau = _LEAD_ACCEL_TAU; // Assuming _LEAD_ACCEL_TAU is defined and set to 1.0
+    aLeadTau = params._LEAD_ACCEL_TAU; // Assuming _LEAD_ACCEL_TAU is defined and set to 1.0
 
     K_A = kalman_params.GetA();
     K_C = kalman_params.GetC();
@@ -140,7 +140,7 @@ float Cluster::aLeadTau() const {
             count++;
         }
     }
-    return count > 0 ? sum / count : _LEAD_ACCEL_TAU;
+    return count > 0 ? sum / count : params._LEAD_ACCEL_TAU;
 }
 
 bool Cluster::measured() const {
@@ -156,9 +156,8 @@ bool Cluster::is_potential_fcw(float model_prob) const {
     return model_prob > 0.9;
 }
 
-RadarState Cluster::get_RadarState(float model_prob) const {
-    RadarState* radar_state;
-    radar_state->
+std::map<std::string, float> Cluster::get_RadarState(float model_prob) const {
+    std::map<std::string, float> radar_state;
     radar_state["dRel"] = dRel();
     radar_state["yRel"] = yRel();
     radar_state["vRel"] = vRel();
@@ -175,13 +174,13 @@ RadarState Cluster::get_RadarState(float model_prob) const {
 
 std::map<std::string, float> Cluster::get_RadarState_from_vision(const LeadDataV3& lead_msg, double v_ego) const {
     std::map<std::string, float> radar_state;
-    radar_state["dRel"] = lead_msg.x() - RADAR_TO_CAMERA;
+    radar_state["dRel"] = lead_msg.x() - params.RADAR_TO_CAMERA;
     radar_state["yRel"] = -lead_msg.y();
     radar_state["vRel"] = lead_msg.v() - v_ego;
     radar_state["vLead"] = lead_msg.v();
     radar_state["vLeadK"] = lead_msg.v();
     radar_state["aLeadK"] = 0.0;
-    radar_state["aLeadTau"] = _LEAD_ACCEL_TAU;
+    radar_state["aLeadTau"] = params._LEAD_ACCEL_TAU;
     radar_state["fcw"] = false;
     radar_state["modelProb"] = lead_msg.prob();
     radar_state["radar"] = false;
@@ -195,5 +194,5 @@ std::string Cluster::to_string() const {
 }
 
 bool Cluster::potential_low_speed_lead(double v_ego) {
-    return std::abs(yRel()) < 1.5 && v_ego < v_ego_stationary && dRel() < 25;
+    return std::abs(yRel()) < 1.5 && v_ego < params.v_ego_stationary && dRel() < 25;
 }
