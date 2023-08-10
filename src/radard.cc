@@ -7,7 +7,7 @@ double RadarD::laplacian_cdf(double x, double mu, double b) {
 
 Cluster* RadarD::match_vision_to_cluster(double v_ego, const LeadDataV3& lead, 
                             const std::vector<std::unique_ptr<Cluster>>& clusters) {
-    double offset_vision_dist = lead.x() - RADAR_TO_CAMERA;
+    double offset_vision_dist = lead.x() - params.RADAR_TO_CAMERA;
 
     auto prob = [&](const Cluster* c) {
         double prob_d = laplacian_cdf(c->dRel(), offset_vision_dist, lead.x_std());
@@ -38,7 +38,7 @@ Cluster* RadarD::match_vision_to_cluster(double v_ego, const LeadDataV3& lead,
 
 std::map<std::string, float> RadarD::get_lead(double v_ego, bool ready, 
                                     const std::vector<std::unique_ptr<Cluster>>& clusters,
-                                    const LeadDataV3& lead_msg, bool low_speed_override = true) {
+                                    const LeadDataV3& lead_msg, bool low_speed_override) {
     std::map<std::string, float> lead_dict;
     lead_dict["status"] = false;
 
@@ -95,6 +95,15 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
                     std::shared_ptr<RadarState>& out_msg,
                     std::shared_ptr<LiveTracks>& viz_msg,
                     bool enable_lead) {
+
+    if(car->v_ego()){
+        v_ego = car->v_ego();
+        v_ego_hist.push_back(v_ego);
+    } 
+    if (camera->timestamp_eof())
+    {
+        ready = true;
+    }
     // 创建unordered_map来存储Radar数据点
     std::unordered_map<int, RadarPoint> ar_pts;
    // 遍历RadarData中的RadarPoint，并存储到unordered_map中
@@ -142,7 +151,7 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
     int max_cluster_idx = *std::max_element(cluster_idxs.begin(), cluster_idxs.end());
     std::vector<std::unique_ptr<Cluster>> clusters(max_cluster_idx + 1);
     if (track_pts.size() > 1) {
-        for (int idx = 0; idx < track_pts.size(); ++idx) {
+        for (size_t idx = 0; idx < track_pts.size(); ++idx) {
             int cluster_i = cluster_idxs[idx];
             if (clusters[cluster_i] == nullptr) {
                 clusters[cluster_i] = std::make_unique<Cluster>();
@@ -158,19 +167,60 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
     }
 
     // 如果是一个新的数据点，将加速度重置为聚类中的其余轨迹的平均值
-    for (int idx = 0; idx < track_pts.size(); ++idx) {
+    for (size_t idx = 0; idx < track_pts.size(); ++idx) {
         if (tracks[idens[idx]].Getcnt() <= 1) {
             double aLeadK = clusters[cluster_idxs[idx]]->aLeadK();
             double aLeadTau = clusters[cluster_idxs[idx]]->aLeadTau();
             tracks[idens[idx]].ResetaLead(aLeadK, aLeadTau);
         }
     }
-    std::map<std::string, float> radarState;
+    // 组织发布数据
+    out_msg->set_can_mono_time(rr->can_mono_time());
+    out_msg->set_md_mono_time(camera->timestamp_eof());
+    out_msg->set_car_state_mono_time(car->can_mono_time());
+    for (int i = 0; i <= rr->errors_size(); ++i) {
+        out_msg->add_radar_errors(static_cast<Error>(i));
+    }
+    // if(len(rr->errors_size())){
+    //     AERROR << "radar data error";
+    //     return false;
+    // }
+    std::map<std::string, float> leadone;
+    std::map<std::string, float> leadtwo;
     if (enable_lead) {
         if (camera->leadsv3().size() > 1) {
-            radarState.mutable_lead_one() = get_lead(v_ego, ready, clusters, camera->leadsv3(0), true);
-            out_msg->mutable_lead_two() = get_lead(v_ego, ready, clusters, camera->leadsv3(1), false);
+            leadone = get_lead(v_ego, ready, clusters, camera->leadsv3(0), true);
+            leadtwo = get_lead(v_ego, ready, clusters, camera->leadsv3(1), false);
+
+            // out_msg : leadone
+            out_msg->mutable_lead_one()->set_d_rel(leadone["dRel"]);
+            out_msg->mutable_lead_one()->set_y_rel(leadone["yRel"]);
+            out_msg->mutable_lead_one()->set_v_rel(leadone["vRel"]);
+            out_msg->mutable_lead_one()->set_a_rel(leadone["aRel"]);
+            out_msg->mutable_lead_one()->set_v_lead(leadone["vLead"]);
+            out_msg->mutable_lead_one()->set_v_lead_k(leadone["vLeadK"]);
+            out_msg->mutable_lead_one()->set_a_lead_k(leadone["aLeadK"]);
+            out_msg->mutable_lead_one()->set_a_lead_tau(leadone["aLeadTau"]);
+            out_msg->mutable_lead_one()->set_fcw(leadone["fcw"]);
+            out_msg->mutable_lead_one()->set_status(leadone["status"]);
+            out_msg->mutable_lead_one()->set_model_prob(leadone["modelProb"]);
+            out_msg->mutable_lead_one()->set_radar(leadone["radar"]);
+
+            // out_msg : leadtwo
+            out_msg->mutable_lead_two()->set_d_rel(leadtwo["dRel"]);
+            out_msg->mutable_lead_two()->set_y_rel(leadtwo["yRel"]);
+            out_msg->mutable_lead_two()->set_v_rel(leadtwo["vRel"]);
+            out_msg->mutable_lead_two()->set_a_rel(leadtwo["aRel"]);
+            out_msg->mutable_lead_two()->set_v_lead(leadtwo["vLead"]);
+            out_msg->mutable_lead_two()->set_v_lead_k(leadtwo["vLeadK"]);
+            out_msg->mutable_lead_two()->set_a_lead_k(leadtwo["aLeadK"]);
+            out_msg->mutable_lead_two()->set_a_lead_tau(leadtwo["aLeadTau"]);
+            out_msg->mutable_lead_two()->set_fcw(leadtwo["fcw"]);
+            out_msg->mutable_lead_two()->set_status(leadtwo["status"]);
+            out_msg->mutable_lead_two()->set_model_prob(leadtwo["modelProb"]);
+            out_msg->mutable_lead_two()->set_radar(leadtwo["radar"]);
         }
     }
-    return dat;
+    return true;
+
 }
