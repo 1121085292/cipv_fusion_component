@@ -23,15 +23,7 @@ cc_library(
     alwayslink = True,    
     deps = [
         "//cyber",
-        # "//cipv_fusion_component/proto:car_state_cc_proto",
-        # "//cipv_fusion_component/proto:camera_detection_cc_proto",
-        # "//cipv_fusion_component/proto:radar_detection_cc_proto",
-        # "//cipv_fusion_component/proto:cipv_fusion_cc_proto",
-        "//cipv_fusion_component/src:fast_cluster",
-        "//cipv_fusion_component/src:kalman_filter",
-        "//cipv_fusion_component/src:sensor_manager",
-        "//cipv_fusion_component/src:track",
-        "//cipv_fusion_component/src:meta",
+        "//cipv_fusion_component/src:radard",
     ],
 )
 
