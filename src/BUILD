@@ -8,10 +8,9 @@ cc_library(
     srcs = ["radard.cc",],
     hdrs = ["radard.h"],
     deps = [
-        "fast_cluster",
-        "kalman_filter",
-        "track",
-        "meta",
+        # "//cyber",
+        ":fast_cluster",
+        ":track",
     ],
 )
 
@@ -43,22 +42,13 @@ cc_library(
     hdrs = ["kalman_filter.h"],
 )
 
-# cc_library(
-#     name = "sensor_manager",
-#     srcs = ["sensor_manager.cc"],
-#     hdrs = ["sensor_manager.h"],
-#     deps = [
-#         ":meta",
-#     ],
-# )
-
 cc_library(
     name = "track",
-    srcs = ["track.cc"],
+    srcs = ["track.cc",],
     hdrs = ["track.h"],
     deps = [
-        ":kalman_filter",
-        ":meta",
+        "//cipv_fusion_component/src:meta",
+        "kalman_filter",
     ],
 )
 
