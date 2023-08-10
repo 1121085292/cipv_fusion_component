@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+
 #include <cmath>
 #include <set>
 #include <map>
@@ -7,13 +7,18 @@
 #include "cipv_fusion_component/src/kalman_filter.h"
 #include "cipv_fusion_component/src/meta.h"
 
-float _LEAD_ACCEL_TAU = 1.5f;
-float RADAR_TO_CENTER = 2.7f;      //  (deprecated) RADAR is ~ 2.7m ahead from center of car
-float RADAR_TO_CAMERA = 1.52f;      //  RADAR is ~ 1.5m ahead from center of mesh frame
-float v_ego_stationary = 4.0f; 
+struct Params
+{
+    float _LEAD_ACCEL_TAU = 1.5f;
+    // float RADAR_TO_CENTER = 2.7f;      //  (deprecated) RADAR is ~ 2.7m ahead from center of car
+    float RADAR_TO_CAMERA = 1.52f;      //  RADAR is ~ 1.5m ahead from center of mesh frame
+    float v_ego_stationary = 4.0f; 
+};
 
 class Track {
 public:
+    Track() = default;
+    
     Track(double v_lead, const KalmanFilter& kalman_params);
 
     void Update(double d_rel, double y_rel, double v_rel, double v_lead, bool measured);
@@ -54,6 +59,8 @@ private:
     bool measured;
     float model_prob;
     // Define SPEED and ACCEL constants if needed
+    Params params;
+
 };
 
 struct TrackCompare {
@@ -82,7 +89,7 @@ public:
     bool measured() const;
     bool is_potential_fcw(float model_prob) const;
 
-    RadarState get_RadarState(float model_prob) const;
+    std::map<std::string, float> get_RadarState(float model_prob) const;
     std::map<std::string, float> get_RadarState_from_vision(const LeadDataV3& lead_msg, double v_ego) const;
 
     std::string to_string() const;
@@ -91,4 +98,5 @@ public:
 
 private:
     std::set<Track, TrackCompare> tracks;
+    Params params;
 };
