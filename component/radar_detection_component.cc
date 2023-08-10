@@ -11,7 +11,8 @@ bool RadarPm::Proc()
 {
     // std::vector<std::shared_ptr<RadarData>> radar;
     auto out_msg = std::make_shared<RadarData>();
-    out_msg->set_errors(cipv_fusion_component::proto::Error::CANERROR);
+    out_msg->add_errors(Error::CANERROR);
+    out_msg->add_errors(Error::FAULT);
     static uint64_t time = 123456;
     out_msg->set_can_mono_time(time++);
 
