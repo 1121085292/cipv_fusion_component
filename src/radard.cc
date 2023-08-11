@@ -45,13 +45,15 @@ std::map<std::string, float> RadarD::get_lead(double v_ego, bool ready,
     Cluster* cluster = nullptr;
     if (!clusters.empty() && ready && lead_msg.prob() > 0.5) {
         cluster = match_vision_to_cluster(v_ego, lead_msg, clusters);
+    } else {
+        cluster = nullptr;
     }
 
     if (cluster != nullptr) {
         lead_dict = cluster->get_RadarState(lead_msg.prob());
     } else if (cluster == nullptr && ready && lead_msg.prob() > 0.5) {
-        Cluster temp_cluster; // 创建一个临时 Cluster 对象
-        lead_dict = temp_cluster.get_RadarState_from_vision(lead_msg, v_ego);
+        // Cluster temp_cluster; // 创建一个临时 Cluster 对象
+        lead_dict = cluster->get_RadarState_from_vision(lead_msg, v_ego);
     }
 
     if (low_speed_override) {
@@ -109,6 +111,7 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
    // 遍历RadarData中的RadarPoint，并存储到unordered_map中
     for (const auto& pt : rr->points()) {
         ar_pts[pt.track_id()] = pt;
+        AINFO << "radar track_id: " << pt.track_id();
     }
 
     // 移除原数据中缺失的数据点
@@ -118,6 +121,7 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
             // 当原数据中的trackId在ar_pts中找不到时，从unordered_map中移除该轨迹
             it = tracks.erase(it);
         } 
+        AINFO << "again radar track_id: " << ar_pts[trackId].track_id();
     }
     // 遍历ar_pts中的数据点并存储到rpt中
     for (const auto& pair : ar_pts) {
@@ -129,25 +133,32 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
         // 创建跟踪对象，如果该跟踪对象不存在或者是一个新的跟踪
         if (tracks.find(trackId) == tracks.end()) {
             tracks[trackId] = Track(v_lead, kalman_params);
+            AINFO << "tracks aleadK: " << tracks[trackId].GetaLeadK();
         }
 
         // 更新跟踪对象的信息
         tracks[trackId].Update(rpt.d_rel(), rpt.y_rel(), rpt.v_rel(), v_lead, rpt.measured());
+        AINFO << "tracks aleadK kalman: " << tracks[trackId].GetaLeadK();
     }
     // track_id容器
     std::vector<int> idens;
     for (const auto& track_pair : tracks) {
         idens.push_back(track_pair.first);
     }
+    AINFO << "idens" << idens.size();
     //track_id排序 
     std::sort(idens.begin(), idens.end());
 
     std::vector<std::vector<double>> track_pts;
     for (int iden : idens) {
         track_pts.push_back(tracks[iden].GetKeyForCluster());
+        AINFO << "radar track_pts size: " << track_pts.size();
     }
+    
     // If we have multiple points, cluster them
-    std::vector<int> cluster_idxs = cluster_points_centroid(track_pts, 2.5); // 计算聚类
+    std::vector<int> cluster_idxs = cluster_points_centroid(track_pts, 50); // 计算聚类
+    AINFO << "radar cluster_idxs size: " << track_pts.size();
+    
     int max_cluster_idx = *std::max_element(cluster_idxs.begin(), cluster_idxs.end());
     std::vector<std::unique_ptr<Cluster>> clusters(max_cluster_idx + 1);
     if (track_pts.size() > 1) {
@@ -181,6 +192,9 @@ bool RadarD::Update(const std::shared_ptr<RadarData>& rr,
     for (int i = 0; i <= rr->errors_size(); ++i) {
         out_msg->add_radar_errors(static_cast<Error>(i));
     }
+    // for(const auto& error : rr->errors()){
+    //     out_msg->add_radar_errors();
+    // }
     // if(len(rr->errors_size())){
     //     AERROR << "radar data error";
     //     return false;
