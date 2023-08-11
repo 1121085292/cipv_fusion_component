@@ -2,13 +2,14 @@
 
 #include <deque>
 
-// #include "cyber/cyber.h"
+#include "cyber/cyber.h"
 
 #include "cipv_fusion_component/src/track.h"
 #include "cipv_fusion_component/src/fast_cluster.h"
 
 class RadarD {
 public:
+    // RadarD() = default;
     RadarD(double radar_ts, int delay = 0);
     bool Update(const std::shared_ptr<RadarData>& rr, 
                 const std::shared_ptr<CarState>& car, 
