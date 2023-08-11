@@ -19,7 +19,7 @@ bool CipvFusionComponent::Init()
     // enable_lead = true;
     //init publisher
     fusion_writer_ = ComponentBase::node_->CreateWriter<RadarState>("/perception/output/cipv/");
-    inner_fusion_writer_ = ComponentBase::node_->CreateWriter<LiveTracks>("/perception/UI/cipv/");
+    // inner_fusion_writer_ = ComponentBase::node_->CreateWriter<LiveTracks>("/perception/UI/cipv/");
     return true;
 }
 
@@ -38,7 +38,7 @@ bool CipvFusionComponent::Proc(const std::shared_ptr<RadarData> &radar,
     std::shared_ptr<LiveTracks> viz_msg(new (std::nothrow)
                                                       LiveTracks);
 
-    std::shared_ptr<RadarD> radard;
+    std::shared_ptr<RadarD> radard = std::make_shared<RadarD>(radar_ts_, 0);
     bool status = radard->Update(radar, car, camera, out_msg, viz_msg, enable_lead_);
     // bool status = InternalProc(radar, car, camera, out_msg, viz_msg);
     if (status) {
