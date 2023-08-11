@@ -8,7 +8,7 @@ cc_library(
     srcs = ["radard.cc",],
     hdrs = ["radard.h"],
     deps = [
-        # "//cyber",
+        "//cyber",
         ":fast_cluster",
         ":track",
     ],
