@@ -18,9 +18,10 @@ class CipvFusionComponent : public Component<RadarData, CarState, ModelV2>{
   private:
     //publisher
     std::shared_ptr<apollo::cyber::Writer<RadarState>> fusion_writer_;
-    std::shared_ptr<apollo::cyber::Writer<LiveTracks>> inner_fusion_writer_;
+    // std::shared_ptr<apollo::cyber::Writer<LiveTracks>> inner_fusion_writer_;
 
     bool enable_lead_ = true;
+    float radar_ts_ = 0.05;
 
 };
 CYBER_REGISTER_COMPONENT(CipvFusionComponent);
