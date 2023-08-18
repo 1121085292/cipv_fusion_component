@@ -9,7 +9,7 @@
     <src_path>//cipv_fusion_component</src_path>
     <license>BSD</license>
     <author>tang</author>
-    <depend type="binary" src_path="//cyber" repo_name="cipv_fusion_component">cipv_fusion_component-dev</depend>
+    <depend type="binary" src_path="//cipv_fusion_component" repo_name="cipv_fusion_component">cipv_fusion_component-dev</depend>
     <depend>bazel-extend-tools-dev</depend>
     <depend lib_names="protobuf" repo_name="com_google_protobuf">3rd-protobuf-dev</depend>
 
