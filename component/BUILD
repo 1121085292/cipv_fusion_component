@@ -24,6 +24,9 @@ cc_library(
     deps = [
         "//cyber",
         "//cipv_fusion_component/src:radard",
+        "@local_config_python//:python_headers",
+        "@local_config_python//:python_lib",
+        "@boost",
     ],
 )
 

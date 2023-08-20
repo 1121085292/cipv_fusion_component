@@ -12,6 +12,10 @@
     <depend type="binary" src_path="//cyber" repo_name="cyber">cyber-dev</depend>
     <depend>bazel-extend-tools-dev</depend>
     <depend lib_names="protobuf" repo_name="com_google_protobuf">3rd-protobuf-dev</depend>
+    <depend repo_name="boost">3rd-boost-dev</depend>
+
+    <!-- <depend expose="False">3rd-rules-python-dev</depend> -->
+    <!-- <depend expose="False">3rd-py-dev</depend> -->
 
     <builder>bazel</builder>
 </package>    
